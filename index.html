@@ -627,6 +627,180 @@ kbd {
   border-radius: 4px; font-size: 11px; font-family: inherit;
   background: var(--bg); margin: 0 2px;
 }
+
+/* ── Timezone Clocks ── */
+.tz-clocks {
+  display: flex; gap: 10px; align-items: flex-start; flex-shrink: 0;
+}
+.tz-clock {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 8px 14px;
+  box-shadow: var(--shadow); text-align: center; min-width: 80px;
+}
+.tz-time {
+  font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px; line-height: 1.2;
+}
+.tz-label {
+  font-size: 10px; color: var(--text2); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px;
+}
+
+/* ── X Post Bank ── */
+.xpost-section { margin-top: 24px; padding-top: 20px; border-top: 2px solid var(--border); }
+.xpost-section-title {
+  font-size: 13px; font-weight: 700; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.xpost-compose { position: relative; margin-bottom: 12px; }
+.xpost-compose textarea {
+  width: 100%; padding: 12px 14px; border: 1px solid var(--border);
+  border-radius: 10px; font-size: 14px; font-family: inherit;
+  min-height: 90px; resize: vertical; outline: none;
+  transition: border-color 0.15s; line-height: 1.5;
+}
+.xpost-compose textarea:focus { border-color: var(--accent); }
+.xpost-compose-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 8px;
+}
+.xpost-counter {
+  font-size: 12px; color: var(--text2);
+}
+.xpost-counter.warn { color: var(--orange); }
+.xpost-counter.over { color: var(--red); }
+.xpost-bank { margin-top: 16px; }
+.xpost-card {
+  background: var(--bg); border-radius: 10px; padding: 14px 16px;
+  margin-bottom: 10px; border: 1px solid var(--border); transition: all 0.2s;
+}
+.xpost-card.posted { opacity: 0.5; }
+.xpost-card-text {
+  font-size: 14px; line-height: 1.5; margin-bottom: 8px;
+  white-space: pre-wrap; word-break: break-word;
+}
+.xpost-card.posted .xpost-card-text { text-decoration: line-through; color: var(--text2); }
+.xpost-card-footer {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.xpost-card-date { font-size: 11px; color: var(--text2); }
+.xpost-card-actions { display: flex; gap: 6px; }
+.xpost-suggestion-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;
+}
+@media (max-width: 600px) { .xpost-suggestion-grid { grid-template-columns: 1fr; } }
+.xpost-suggestion {
+  background: var(--accent-light); border: 1px solid #dbeafe;
+  border-radius: 10px; padding: 12px 14px; cursor: pointer;
+  font-size: 13px; color: var(--accent); line-height: 1.4;
+  transition: all 0.15s; text-align: left;
+}
+.xpost-suggestion:hover { background: #dbeafe; border-color: var(--accent); }
+.xpost-suggestion-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.6px; color: var(--text2); margin-bottom: 4px;
+}
+
+/* ── Due Date Badges ── */
+.due-badge {
+  font-size: 11px; font-weight: 600; padding: 2px 8px;
+  border-radius: 999px; white-space: nowrap; flex-shrink: 0;
+}
+.due-overdue { background: #fef2f2; color: var(--red); border: 1px solid #fecaca; }
+.due-today { background: #fffbeb; color: var(--orange); border: 1px solid #fde68a; }
+.due-week { background: #ecfdf5; color: var(--green); border: 1px solid #a7f3d0; }
+.due-future { background: var(--bg); color: var(--text2); border: 1px solid var(--border); }
+
+.task-section-header {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.8px; color: var(--text2); padding: 10px 4px 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+.task-section-header:first-child { padding-top: 0; }
+
+.task-due-input {
+  padding: 9px 10px; border: 1px solid var(--border);
+  border-radius: 8px; font-size: 13px; outline: none;
+  transition: border-color 0.15s; min-width: 130px; flex-shrink: 0;
+  color: var(--text2);
+}
+.task-due-input:focus { border-color: var(--accent); }
+
+/* ── Calendar Panel ── */
+.cal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.cal-nav { display: flex; align-items: center; gap: 12px; }
+.cal-month-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+.cal-nav-btn {
+  width: 32px; height: 32px; border: 1px solid var(--border);
+  background: var(--bg); border-radius: 8px; cursor: pointer;
+  font-size: 16px; display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.cal-nav-btn:hover { background: var(--border); }
+
+.cal-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 2px; margin-bottom: 16px;
+}
+.cal-dow {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--text2); text-align: center;
+  padding: 6px 0;
+}
+.cal-day {
+  aspect-ratio: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-start;
+  padding: 6px 4px; border-radius: 8px; cursor: pointer;
+  transition: all 0.12s; border: 1px solid transparent;
+  min-height: 48px; position: relative;
+}
+.cal-day:hover { background: var(--bg); border-color: var(--border); }
+.cal-day.today {
+  background: var(--accent-light); border-color: #bfdbfe;
+}
+.cal-day.selected {
+  background: var(--accent); color: #fff; border-color: var(--accent);
+}
+.cal-day.selected .cal-day-num { color: #fff; }
+.cal-day.other-month { opacity: 0.35; }
+.cal-day-num {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  line-height: 1; margin-bottom: 4px;
+}
+.cal-day.today .cal-day-num { color: var(--accent); }
+.cal-day.selected .cal-day-num { color: #fff; }
+.cal-dots {
+  display: flex; flex-wrap: wrap; gap: 2px;
+  justify-content: center; max-width: 100%;
+}
+.cal-dot {
+  width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+}
+.cal-day-detail {
+  background: var(--bg); border-radius: 10px; padding: 16px;
+  margin-top: 8px;
+}
+.cal-day-detail-title {
+  font-size: 14px; font-weight: 700; margin-bottom: 12px;
+}
+.cal-quick-add {
+  display: flex; gap: 8px; margin-top: 12px;
+}
+.cal-quick-add input {
+  flex: 1; padding: 8px 12px; border: 1px solid var(--border);
+  border-radius: 8px; font-size: 13px; outline: none; transition: border-color 0.15s;
+}
+.cal-quick-add input:focus { border-color: var(--accent); }
+
+.tab-badge {
+  display: inline-block; margin-left: 5px; padding: 1px 6px;
+  background: var(--red); color: #fff; border-radius: 999px;
+  font-size: 10px; font-weight: 700; vertical-align: middle;
+  line-height: 1.4;
+}
 </style>
 </head>
 <body>
@@ -638,6 +812,16 @@ kbd {
       <div class="date" id="dateDisplay"></div>
     </div>
     <div class="header-right">
+      <div class="tz-clocks">
+        <div class="tz-clock">
+          <div class="tz-time" id="tzPST">--:--</div>
+          <div class="tz-label">PST</div>
+        </div>
+        <div class="tz-clock">
+          <div class="tz-time" id="tzEST">--:--</div>
+          <div class="tz-label">EST</div>
+        </div>
+      </div>
       <div class="review-btn-wrap">
         <button class="review-btn" onclick="toggleReviewMenu(event)">
           <span>\u{1F4CB}</span>
@@ -741,6 +925,7 @@ kbd {
     <button class="tab-btn" data-tab="ideas">Ideas</button>
     <button class="tab-btn" data-tab="notes">Notes</button>
     <button class="tab-btn" data-tab="images">Images</button>
+    <button class="tab-btn" data-tab="calendar" id="calTabBtn">Calendar</button>
   </nav>
 
   <!-- Tasks Panel -->
@@ -748,6 +933,7 @@ kbd {
     <div class="panel-card">
       <div class="add-row">
         <input type="text" id="taskInput" placeholder="Add a task..." onkeydown="if(event.key==='Enter')addTask()">
+        <input type="date" id="taskDueInput" class="task-due-input" title="Optional due date">
         <button class="btn btn-primary" onclick="addTask()">Add</button>
       </div>
       <ul class="item-list" id="taskList"></ul>
@@ -783,6 +969,26 @@ kbd {
         <button class="btn btn-primary" onclick="openModal('social')">+ Add Account</button>
       </div>
       <ul class="item-list" id="socialList"></ul>
+
+      <!-- X Post Drafting Workspace -->
+      <div class="xpost-section">
+        <div class="xpost-section-title">&#128140; X Post Idea Bank</div>
+
+        <div class="xpost-compose">
+          <textarea id="xpostDraft" placeholder="Draft a post for X / Twitter..." maxlength="280"
+            oninput="xpostUpdateCounter()"></textarea>
+          <div class="xpost-compose-footer">
+            <span class="xpost-counter" id="xpostCounter">0 / 280</span>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-ghost btn-sm" onclick="xpostGenerate()">&#10024; Generate Ideas</button>
+              <button class="btn btn-primary btn-sm" onclick="xpostSave()">Save Idea</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="xpostSuggestions"></div>
+        <div class="xpost-bank" id="xpostBank"></div>
+      </div>
     </div>
   </div>
 
@@ -834,6 +1040,22 @@ kbd {
     </div>
   </div>
 
+  <!-- Calendar Panel -->
+  <div class="panel" id="panel-calendar">
+    <div class="panel-card">
+      <div class="cal-header">
+        <div class="cal-nav">
+          <button class="cal-nav-btn" onclick="calNav(-1)">&#8249;</button>
+          <div class="cal-month-title" id="calMonthTitle"></div>
+          <button class="cal-nav-btn" onclick="calNav(1)">&#8250;</button>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="calGoToday()">Today</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div id="calDayDetail"></div>
+    </div>
+  </div>
+
   <!-- Review Modal -->
   <div class="review-overlay" id="reviewOverlay">
     <div class="review-modal">
@@ -866,7 +1088,7 @@ kbd {
 
   <!-- Keyboard Hints -->
   <div class="kbd-bar">
-    <span class="kbd-hint"><kbd>1</kbd>-<kbd>7</kbd> Switch tabs</span>
+    <span class="kbd-hint"><kbd>1</kbd>-<kbd>8</kbd> Switch tabs</span>
     <span class="kbd-hint"><kbd>c</kbd> Quick capture</span>
     <span class="kbd-hint"><kbd>/</kbd> Focus tab input</span>
     <span class="kbd-hint"><kbd>Esc</kbd> Close modal</span>
@@ -947,9 +1169,12 @@ let contacts = load('dash_contacts', []);
 let socials  = load('dash_socials', []);
 let ideas    = load('dash_ideas', []);
 let notes    = load('dash_notes', []);
+let xposts   = load('dash_xposts', []);
 let activeTab = load('dash_tab', 'tasks');
 let editIdx  = null;
 let activeNoteId = null;
+let calViewDate = null; // { year, month } for calendar navigation
+let calSelectedDate = null; // "YYYY-MM-DD"
 
 // ══════════════════════════════════════
 // Header + Date
@@ -961,6 +1186,18 @@ function updateHeader() {
   document.getElementById('dateDisplay').textContent = new Date().toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
+}
+
+// ══════════════════════════════════════
+// Timezone Clocks
+// ══════════════════════════════════════
+const TZ_FMT_PST = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', hour: 'numeric', minute: '2-digit', hour12: true });
+const TZ_FMT_EST = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York',    hour: 'numeric', minute: '2-digit', hour12: true });
+
+function tickClocks() {
+  const now = new Date();
+  document.getElementById('tzPST').textContent = TZ_FMT_PST.format(now);
+  document.getElementById('tzEST').textContent = TZ_FMT_EST.format(now);
 }
 
 // ══════════════════════════════════════
@@ -1509,6 +1746,7 @@ function switchTab(tab) {
   save('dash_tab', tab);
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
   document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tab));
+  if (tab === 'calendar') calInit();
 }
 
 document.getElementById('tabBar').addEventListener('click', e => {
@@ -1518,32 +1756,84 @@ document.getElementById('tabBar').addEventListener('click', e => {
 // ══════════════════════════════════════
 // Tasks
 // ══════════════════════════════════════
+function getDueDateClass(dueDate) {
+  if (!dueDate) return '';
+  const t = today();
+  if (dueDate < t) return 'overdue';
+  if (dueDate === t) return 'today';
+  // within next 7 days
+  const diff = (new Date(dueDate) - new Date(t)) / 86400000;
+  if (diff <= 7) return 'week';
+  return 'future';
+}
+
+function dueBadgeHtml(dueDate) {
+  if (!dueDate) return '';
+  const cls = getDueDateClass(dueDate);
+  const label = cls === 'overdue' ? `Overdue: ${dueDate}`
+              : cls === 'today'   ? 'Due Today'
+              : cls === 'week'    ? `Due ${dueDate}`
+              : `Due ${dueDate}`;
+  return `<span class="due-badge due-${cls}">${label}</span>`;
+}
+
 function renderTasks() {
   const list = document.getElementById('taskList');
-  const active = tasks.filter(t => !t.done), done = tasks.filter(t => t.done);
+  save('dash_tasks', tasks);
   if (!tasks.length) { list.innerHTML = '<li class="empty-state">No tasks yet</li>'; return; }
-  list.innerHTML = [...active, ...done].map(t => {
-    const i = tasks.indexOf(t);
-    return `<li class="item-row task-item ${t.done?'done':''}">
-      <input type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${i})">
-      <span class="task-text">${esc(t.text)}</span>
+
+  const t = today();
+  const activeTasks = tasks.filter(x => !x.done);
+  const doneTasks   = tasks.filter(x => x.done);
+
+  const overdue  = activeTasks.filter(x => x.dueDate && x.dueDate < t);
+  const dueToday = activeTasks.filter(x => x.dueDate && x.dueDate === t);
+  const dueWeek  = activeTasks.filter(x => x.dueDate && x.dueDate > t && (new Date(x.dueDate) - new Date(t)) / 86400000 <= 7);
+  const rest     = activeTasks.filter(x => !x.dueDate || (x.dueDate > t && (new Date(x.dueDate) - new Date(t)) / 86400000 > 7));
+
+  function taskHtml(task) {
+    const i = tasks.indexOf(task);
+    return `<li class="item-row task-item ${task.done?'done':''}">
+      <input type="checkbox" ${task.done?'checked':''} onchange="toggleTask(${i})">
+      <span class="task-text">${esc(task.text)}</span>
+      ${dueBadgeHtml(task.dueDate)}
       <button class="btn-icon" onclick="removeTask(${i})">&times;</button>
     </li>`;
-  }).join('');
-  save('dash_tasks', tasks);
+  }
+
+  let html = '';
+  if (overdue.length)  html += `<li class="task-section-header">&#128308; Overdue</li>${overdue.map(taskHtml).join('')}`;
+  if (dueToday.length) html += `<li class="task-section-header">&#128993; Due Today</li>${dueToday.map(taskHtml).join('')}`;
+  if (dueWeek.length)  html += `<li class="task-section-header">&#128994; Due This Week</li>${dueWeek.map(taskHtml).join('')}`;
+  if (rest.length)     html += `<li class="task-section-header">&#128203; All Tasks</li>${rest.map(taskHtml).join('')}`;
+  if (doneTasks.length) html += doneTasks.map(taskHtml).join('');
+
+  list.innerHTML = html;
+  updateCalendarTabBadge();
 }
+
+function setTaskDue(i, date) {
+  tasks[i].dueDate = date || null;
+  save('dash_tasks', tasks);
+  renderTasks();
+}
+
 function addTask() {
-  const el = document.getElementById('taskInput'), t = el.value.trim();
+  const el  = document.getElementById('taskInput'), t = el.value.trim();
+  const due = document.getElementById('taskDueInput').value || null;
   if (!t) return;
-  tasks.push({ text: t, done: false, created: Date.now() });
-  el.value = ''; renderTasks();
+  tasks.push({ text: t, done: false, created: Date.now(), dueDate: due });
+  el.value = '';
+  document.getElementById('taskDueInput').value = '';
+  renderTasks();
 }
 function toggleTask(i) {
   tasks[i].done = !tasks[i].done;
   tasks[i].completedAt = tasks[i].done ? Date.now() : null;
   renderTasks();
+  if (activeTab === 'calendar') renderCalendar();
 }
-function removeTask(i) { tasks.splice(i, 1); renderTasks(); }
+function removeTask(i) { tasks.splice(i, 1); renderTasks(); if (activeTab === 'calendar') renderCalendar(); }
 
 // ══════════════════════════════════════
 // Resources (Links)
@@ -1637,6 +1927,147 @@ function saveSocial() {
   closeModals(); renderSocials();
 }
 function removeSocial(i) { socials.splice(i, 1); renderSocials(); }
+
+// ══════════════════════════════════════
+// X Post Idea Bank
+// ══════════════════════════════════════
+function xpostUpdateCounter() {
+  const ta = document.getElementById('xpostDraft');
+  const len = ta.value.length;
+  const el = document.getElementById('xpostCounter');
+  el.textContent = `${len} / 280`;
+  el.className = 'xpost-counter' + (len > 280 ? ' over' : len > 240 ? ' warn' : '');
+}
+
+function xpostSave() {
+  const ta = document.getElementById('xpostDraft');
+  const text = ta.value.trim();
+  if (!text) { showToast('Write something first'); return; }
+  if (text.length > 280) { showToast('Over 280 characters'); return; }
+  xposts.unshift({ id: 'xp_' + Date.now(), text, created: Date.now(), status: 'draft' });
+  save('dash_xposts', xposts);
+  ta.value = '';
+  xpostUpdateCounter();
+  renderXPosts();
+  showToast('Idea saved!');
+}
+
+function xpostTogglePosted(id) {
+  const p = xposts.find(x => x.id === id);
+  if (!p) return;
+  p.status = p.status === 'posted' ? 'draft' : 'posted';
+  save('dash_xposts', xposts);
+  renderXPosts();
+}
+
+function xpostDelete(id) {
+  xposts = xposts.filter(x => x.id !== id);
+  save('dash_xposts', xposts);
+  renderXPosts();
+}
+
+function xpostPrefill(text) {
+  const ta = document.getElementById('xpostDraft');
+  ta.value = text;
+  xpostUpdateCounter();
+  ta.focus();
+  ta.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function renderXPosts() {
+  const el = document.getElementById('xpostBank');
+  if (!el) return;
+  if (!xposts.length) {
+    el.innerHTML = '<div class="empty-state" style="padding:20px 0;font-size:13px">No post ideas saved yet</div>';
+    return;
+  }
+  el.innerHTML = xposts.map(p => {
+    const date = new Date(p.created).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const isPosted = p.status === 'posted';
+    return `<div class="xpost-card ${isPosted ? 'posted' : ''}">
+      <div class="xpost-card-text">${esc(p.text)}</div>
+      <div class="xpost-card-footer">
+        <span class="xpost-card-date">${date}</span>
+        <div class="xpost-card-actions">
+          <button class="btn btn-ghost btn-sm" onclick="xpostPrefillById('${p.id}')">Edit</button>
+          <button class="btn btn-ghost btn-sm" onclick="xpostTogglePosted('${p.id}')">${isPosted ? 'Unpost' : 'Mark Posted'}</button>
+          <button class="btn-icon" onclick="xpostDelete('${p.id}')" title="Delete">&times;</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function xpostPrefillById(id) {
+  const p = xposts.find(x => x.id === id);
+  if (p) xpostPrefill(p.text);
+}
+
+function xpostGenerate() {
+  const el = document.getElementById('xpostSuggestions');
+  const suggestions = [];
+  const t = today();
+  const weekAgo = Date.now() - 7 * 86400000;
+
+  // 1. Completed tasks in last 7 days
+  const recentDone = tasks.filter(x => x.done && (x.completedAt || 0) >= weekAgo).slice(0, 3);
+  recentDone.forEach(task => {
+    suggestions.push({ label: 'Just Shipped', text: `Just shipped: ${task.text} \u{1F680}` });
+  });
+
+  // 2. New ideas this week
+  const recentIdeas = ideas.filter(i => i.created >= weekAgo).slice(0, 2);
+  recentIdeas.forEach(idea => {
+    suggestions.push({ label: 'Deep Dive', text: `Deep dive: ${idea.title}` });
+  });
+
+  // 3. Weekly/monthly theme
+  const wf = load('dash_week_focus', null);
+  if (wf && wf.items) {
+    const themes = wf.items.filter(Boolean);
+    if (themes.length) suggestions.push({ label: 'Weekly Focus', text: `This week I\u2019m focused on: ${themes[0]}` });
+  }
+  const mf = load('dash_month_focus', null);
+  if (mf && mf.theme) {
+    suggestions.push({ label: 'Monthly Theme', text: `Monthly theme: "${mf.theme}" \u2014 staying locked in.` });
+  }
+
+  // 4. Notes created recently
+  const recentNotes = notes.filter(n => n.created >= weekAgo && n.title).slice(0, 2);
+  recentNotes.forEach(n => {
+    suggestions.push({ label: 'Thinking Out Loud', text: `Thinking out loud: ${n.title}` });
+  });
+
+  // 5. Reflections
+  const refs = load('dash_reflections', []);
+  const recentRefs = refs.filter(r => r.date >= new Date(weekAgo).toISOString().slice(0,10)).slice(0, 2);
+  recentRefs.forEach(r => {
+    if (r.text) suggestions.push({ label: 'Lesson Learned', text: `Lesson learned: ${r.text.split('.')[0].slice(0, 100)}` });
+  });
+
+  // Fill up to 5 with generic hooks if not enough data
+  const hooks = [
+    'What\u2019s one thing you shipped this week?',
+    'What problem are you obsessed with right now?',
+    'One underrated tool that\u2019s been a game-changer for me:',
+    'The best decision I made this month:',
+    'Hot take: consistency beats intensity every time.',
+    'What\u2019s the hardest thing you\u2019re working on right now?',
+  ];
+  let hookIdx = 0;
+  while (suggestions.length < 5 && hookIdx < hooks.length) {
+    suggestions.push({ label: 'Hook Idea', text: hooks[hookIdx++] });
+  }
+
+  // Store suggestions in a temp global so onclick can reference by index safely
+  window._xpostSuggestions = suggestions.slice(0, 5);
+  el.innerHTML = `<div class="xpost-suggestion-grid">${window._xpostSuggestions.map((s, idx) =>
+    `<button class="xpost-suggestion" onclick="xpostPrefill(window._xpostSuggestions[${idx}].text)">
+      <div class="xpost-suggestion-label">${esc(s.label)}</div>
+      ${esc(s.text)}
+    </button>`
+  ).join('')}</div>`;
+}
 
 // ══════════════════════════════════════
 // Ideas
@@ -1735,6 +2166,176 @@ function removeNote(id) {
   if (activeNoteId === id) activeNoteId = notes.length ? notes[0].id : null;
   save('dash_notes', notes);
   renderNoteNav(); renderNoteEditor();
+}
+
+// ══════════════════════════════════════
+// Calendar
+// ══════════════════════════════════════
+function calInit() {
+  const now = new Date();
+  calViewDate = calViewDate || { year: now.getFullYear(), month: now.getMonth() };
+  renderCalendar();
+}
+
+function calNav(dir) {
+  calViewDate.month += dir;
+  if (calViewDate.month > 11) { calViewDate.month = 0; calViewDate.year++; }
+  if (calViewDate.month < 0)  { calViewDate.month = 11; calViewDate.year--; }
+  renderCalendar();
+}
+
+function calGoToday() {
+  const now = new Date();
+  calViewDate = { year: now.getFullYear(), month: now.getMonth() };
+  calSelectedDate = today();
+  renderCalendar();
+}
+
+function calSelectDate(dateStr) {
+  calSelectedDate = calSelectedDate === dateStr ? null : dateStr;
+  renderCalendar();
+}
+
+function updateCalendarTabBadge() {
+  const btn = document.getElementById('calTabBtn');
+  if (!btn) return;
+  const t = today();
+  const overdue = tasks.filter(x => !x.done && x.dueDate && x.dueDate <= t).length;
+  const existing = btn.querySelector('.tab-badge');
+  if (existing) existing.remove();
+  if (overdue > 0) {
+    const badge = document.createElement('span');
+    badge.className = 'tab-badge';
+    badge.textContent = overdue;
+    btn.appendChild(badge);
+  }
+}
+
+function renderCalendar() {
+  const grid = document.getElementById('calGrid');
+  const titleEl = document.getElementById('calMonthTitle');
+  if (!grid || !titleEl) return;
+
+  const { year, month } = calViewDate;
+  const t = today();
+
+  titleEl.textContent = new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+  // Build tasks by date map
+  const tasksByDate = {};
+  tasks.forEach(task => {
+    if (task.dueDate && !task.done) {
+      if (!tasksByDate[task.dueDate]) tasksByDate[task.dueDate] = [];
+      tasksByDate[task.dueDate].push(task);
+    }
+  });
+
+  const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let html = DAYS.map(d => `<div class="cal-dow">${d}</div>`).join('');
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrev  = new Date(year, month, 0).getDate();
+
+  // Prev month padding
+  const prevMonth = month === 0 ? 11 : month - 1;
+  const prevYear  = month === 0 ? year - 1 : year;
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const d = daysInPrev - i;
+    const ds = `${prevYear}-${String(prevMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    html += calDayHtml(d, ds, true, tasksByDate, t);
+  }
+  // Current month
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    html += calDayHtml(d, ds, false, tasksByDate, t);
+  }
+  // Next month padding
+  const total = firstDay + daysInMonth;
+  const nextRows = Math.ceil(total / 7) * 7 - total;
+  const nextMonth = month === 11 ? 0 : month + 1;
+  const nextYear  = month === 11 ? year + 1 : year;
+  for (let d = 1; d <= nextRows; d++) {
+    const ds = `${nextYear}-${String(nextMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    html += calDayHtml(d, ds, true, tasksByDate, t);
+  }
+
+  grid.innerHTML = html;
+  renderCalDayDetail();
+  updateCalendarTabBadge();
+}
+
+function calDayHtml(dayNum, dateStr, otherMonth, tasksByDate, todayStr) {
+  const isToday    = dateStr === todayStr;
+  const isSelected = dateStr === calSelectedDate;
+  const dayTasks   = tasksByDate[dateStr] || [];
+
+  let cls = 'cal-day';
+  if (isToday)    cls += ' today';
+  if (isSelected) cls += ' selected';
+  if (otherMonth) cls += ' other-month';
+
+  const dots = dayTasks.slice(0, 6).map(task => {
+    const dueCls = getDueDateClass(task.dueDate);
+    const color = dueCls === 'overdue' ? 'var(--red)'
+                : dueCls === 'today'   ? 'var(--orange)'
+                : 'var(--green)';
+    return `<div class="cal-dot" style="background:${color}"></div>`;
+  }).join('');
+
+  return `<div class="${cls}" onclick="calSelectDate('${dateStr}')">
+    <div class="cal-day-num">${dayNum}</div>
+    ${dots ? `<div class="cal-dots">${dots}</div>` : ''}
+  </div>`;
+}
+
+function renderCalDayDetail() {
+  const el = document.getElementById('calDayDetail');
+  if (!el) return;
+  if (!calSelectedDate) { el.innerHTML = ''; return; }
+
+  const dayTasks = tasks.filter(t => t.dueDate === calSelectedDate && !t.done);
+  const doneTasks = tasks.filter(t => t.dueDate === calSelectedDate && t.done);
+
+  const labelDate = new Date(calSelectedDate + 'T12:00:00').toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric'
+  });
+
+  let html = `<div class="cal-day-detail">
+    <div class="cal-day-detail-title">${labelDate}</div>`;
+
+  if (dayTasks.length || doneTasks.length) {
+    const allDay = [...dayTasks, ...doneTasks];
+    html += `<ul class="item-list">${allDay.map(task => {
+      const i = tasks.indexOf(task);
+      return `<li class="item-row task-item ${task.done?'done':''}">
+        <input type="checkbox" ${task.done?'checked':''} onchange="toggleTask(${i})">
+        <span class="task-text">${esc(task.text)}</span>
+        <button class="btn-icon" onclick="removeTask(${i})">&times;</button>
+      </li>`;
+    }).join('')}</ul>`;
+  } else {
+    html += '<div style="color:var(--text2);font-size:13px;padding:4px 0">No tasks for this day.</div>';
+  }
+
+  html += `<div class="cal-quick-add">
+    <input type="text" id="calQuickInput" placeholder="Add task for ${labelDate}..."
+      onkeydown="if(event.key==='Enter')calQuickAdd()">
+    <button class="btn btn-primary btn-sm" onclick="calQuickAdd()">Add</button>
+  </div></div>`;
+
+  el.innerHTML = html;
+}
+
+function calQuickAdd() {
+  const el = document.getElementById('calQuickInput');
+  const text = el ? el.value.trim() : '';
+  if (!text || !calSelectedDate) return;
+  tasks.push({ text, done: false, created: Date.now(), dueDate: calSelectedDate });
+  save('dash_tasks', tasks);
+  el.value = '';
+  renderTasks();
+  renderCalendar();
 }
 
 // ══════════════════════════════════════
@@ -2159,7 +2760,13 @@ function renderStepContent(type, stepName) {
     if (stepName === 'openTasks') {
       if (!currentReview.openTasks.length)
         return '<div class="review-section-title">Open tasks</div><div class="review-empty">Inbox zero on tasks. Nicely done.</div>';
+      const t = today();
+      const overdueCount = tasks.filter(x => !x.done && x.dueDate && x.dueDate < t).length;
+      const overdueNote = overdueCount > 0
+        ? `<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--red)">&#128308; <b>${overdueCount} overdue task${overdueCount > 1 ? 's' : ''}</b> — check the Calendar tab after review.</div>`
+        : '';
       return `<div class="review-section-title">Still open from before</div>
+        ${overdueNote}
         <p class="review-help">Star what matters today. Prune what doesn't.</p>
         ${currentReview.openTasks.map((item, i) => reviewItemHtml(item, 'openTasks', i)).join('')}`;
     }
@@ -2415,7 +3022,7 @@ function closeReview() {
 // ══════════════════════════════════════
 // Keyboard Shortcuts
 // ══════════════════════════════════════
-const TAB_KEYS = { '1':'tasks','2':'resources','3':'contacts','4':'social','5':'ideas','6':'notes','7':'images' };
+const TAB_KEYS = { '1':'tasks','2':'resources','3':'contacts','4':'social','5':'ideas','6':'notes','7':'images','8':'calendar' };
 
 document.addEventListener('keydown', e => {
   // Don't fire when typing in inputs
@@ -2449,10 +3056,16 @@ renderMarketLoading(); fetchMarket();
 renderNFTLoading(); fetchNFTs();
 applyRateHidden();
 loadFocus();
+tickClocks();
+setInterval(tickClocks, 1000);
+// Pre-init calendar state so calInit() in switchTab has it
+{ const now = new Date(); calViewDate = { year: now.getFullYear(), month: now.getMonth() }; calSelectedDate = today(); }
 switchTab(activeTab);
 renderTasks(); renderLinks(); renderContacts(); renderSocials(); renderIdeas();
 renderNoteNav(); renderNoteEditor();
 renderImages();
+renderXPosts();
+updateCalendarTabBadge();
 pomoResume();
 initImgDrop();
 updateReviewMenu();
