@@ -44,45 +44,50 @@ body {
 /* ── Layout ── */
 .sidebar {
   position: fixed; top: 0; left: 0; bottom: 0; width: 220px;
-  background: var(--surface); border-right: 1px solid var(--border);
+  background: #111110;
   display: flex; flex-direction: column; z-index: 50; overflow: hidden;
 }
 .sidebar-top {
-  padding: 20px 16px 14px; border-bottom: 1px solid var(--border);
+  padding: 20px 16px 14px; border-bottom: 1px solid rgba(255,255,255,0.07);
 }
 .sidebar-brand {
-  display: flex; align-items: center; gap: 9px;
-  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
 }
 .brand-icon {
-  font-size: 20px; color: var(--accent); line-height: 1;
+  width: 28px; height: 28px; background: var(--accent);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: #fff; line-height: 1; flex-shrink: 0;
 }
 .brand-name {
-  font-size: 15px; font-weight: 700; letter-spacing: -0.3px; color: var(--text);
+  font-size: 15px; font-weight: 700; letter-spacing: -0.3px; color: #fff;
 }
 .sidebar-clocks {
   display: flex; align-items: center; gap: 10px;
-  background: var(--surface2); border-radius: var(--radius-sm);
-  padding: 8px 10px;
+  background: rgba(255,255,255,0.06); border-radius: var(--radius-sm);
+  padding: 8px 10px; border: 1px solid rgba(255,255,255,0.07);
 }
 .tz-clock { flex: 1; text-align: center; }
-.tz-time { display: block; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text); letter-spacing: -0.2px; }
-.tz-label { display: block; font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: 0.5px; text-transform: uppercase; margin-top: 1px; }
-.tz-divider { width: 1px; height: 28px; background: var(--border); flex-shrink: 0; }
+.tz-time { display: block; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; color: rgba(255,255,255,0.9); letter-spacing: -0.2px; }
+.tz-label { display: block; font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.35); letter-spacing: 0.5px; text-transform: uppercase; margin-top: 1px; }
+.tz-divider { width: 1px; height: 28px; background: rgba(255,255,255,0.1); flex-shrink: 0; }
 
-.sidebar-nav { flex: 1; padding: 10px 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 1px; }
+.sidebar-nav { flex: 1; padding: 8px 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 1px; }
 .nav-item {
   display: flex; align-items: center; gap: 10px;
   padding: 9px 11px; border-radius: var(--radius-sm);
   border: none; background: transparent; width: 100%; text-align: left;
-  font-size: 13.5px; font-weight: 500; color: var(--text2);
-  cursor: pointer; transition: all 0.1s; position: relative;
+  font-size: 13.5px; font-weight: 500; color: rgba(255,255,255,0.45);
+  cursor: pointer; transition: all 0.12s; position: relative;
   font-family: inherit;
 }
-.nav-item:hover { background: var(--surface2); color: var(--text); }
-.nav-item.active { background: var(--accent-light); color: var(--accent-text); font-weight: 600; }
-.nav-item svg { width: 17px; height: 17px; flex-shrink: 0; opacity: 0.8; }
-.nav-item.active svg { opacity: 1; }
+.nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+.nav-item.active {
+  background: rgba(79,70,229,0.25);
+  color: #a5b4fc;
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 #4F46E5;
+}
+.nav-item svg { width: 17px; height: 17px; flex-shrink: 0; }
 .nav-badge {
   margin-left: auto; background: var(--danger); color: #fff;
   font-size: 10px; font-weight: 700; padding: 1px 5px;
@@ -91,39 +96,39 @@ body {
 .nav-badge.hidden { display: none; }
 
 .sidebar-bottom {
-  padding: 10px; border-top: 1px solid var(--border);
+  padding: 10px; border-top: 1px solid rgba(255,255,255,0.07);
 }
 .sidebar-review-btn {
   display: flex; align-items: center; gap: 10px;
   padding: 9px 11px; border-radius: var(--radius-sm);
   border: none; background: transparent; width: 100%; text-align: left;
-  font-size: 13.5px; font-weight: 500; color: var(--text2);
-  cursor: pointer; transition: all 0.1s; font-family: inherit;
+  font-size: 13.5px; font-weight: 500; color: rgba(255,255,255,0.45);
+  cursor: pointer; transition: all 0.12s; font-family: inherit;
 }
-.sidebar-review-btn:hover { background: var(--surface2); color: var(--text); }
+.sidebar-review-btn:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
 .sidebar-review-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
-.sidebar-review-btn .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-left: auto; }
+.sidebar-review-btn .dot { width: 7px; height: 7px; border-radius: 50%; background: #818cf8; margin-left: auto; animation: pulse 2s infinite; }
 .sidebar-review-btn .dot.hidden { display: none; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
 /* Review menu — opens upward from sidebar bottom */
 .review-btn-wrap { position: relative; }
 .review-menu {
   position: absolute; bottom: calc(100% + 6px); left: 0; right: 0;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); box-shadow: var(--shadow-md);
-  overflow: hidden; display: none; z-index: 200;
-  min-width: 200px;
+  background: #1c1c1b; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  overflow: hidden; display: none; z-index: 200; min-width: 200px;
 }
 .review-menu.open { display: block; }
 .review-menu button {
   display: flex; align-items: center; justify-content: space-between;
   width: 100%; padding: 10px 14px; border: none; background: none;
-  font-family: inherit; font-size: 13px; cursor: pointer; color: var(--text);
-  gap: 8px;
+  font-family: inherit; font-size: 13px; cursor: pointer;
+  color: rgba(255,255,255,0.75); gap: 8px; transition: background 0.1s;
 }
-.review-menu button:hover { background: var(--surface2); }
+.review-menu button:hover { background: rgba(255,255,255,0.06); }
 .menu-label { font-weight: 500; }
-.menu-last { font-size: 11px; color: var(--text3); text-align: right; }
+.menu-last { font-size: 11px; color: rgba(255,255,255,0.3); text-align: right; }
 
 /* ── Main content area ── */
 .main { margin-left: 220px; min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); flex: 1; }
@@ -312,19 +317,19 @@ body {
 
 /* ── Quote ── */
 .quote-bar {
-  padding: 12px 28px;
+  padding: 12px 28px 12px 32px;
   border-bottom: 1px solid var(--border);
   font-size: 13px; font-style: italic; color: var(--text2);
-  line-height: 1.5;
-  background: var(--surface);
+  line-height: 1.5; background: var(--surface);
+  border-left: 3px solid var(--accent);
 }
-.quote-bar .author { font-style: normal; font-weight: 600; font-size: 12px; margin-left: 6px; }
+.quote-bar .author { font-style: normal; font-weight: 600; font-size: 12px; margin-left: 6px; color: var(--accent-text); }
 
 /* ── Weather ── */
 .weather-bar {
-  padding: 8px 28px; background: var(--surface2);
-  border-bottom: 1px solid var(--border);
-  font-size: 12px; color: var(--text2); display: flex;
+  padding: 8px 28px; background: #f0f4ff;
+  border-bottom: 1px solid #dde5ff;
+  font-size: 12px; color: #4156a0; display: flex;
   align-items: center; gap: 6px;
 }
 .weather-icon { font-size: 18px; line-height: 1; }
@@ -335,8 +340,15 @@ body {
 .weather-loading { color: var(--text3); font-size: 12px; }
 
 /* ── Utility strips ── */
-.strips-area { padding: 0 28px; }
-.strip-row { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.strips-area {
+  padding: 0 28px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.strip-row {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
 
 /* Strip labels */
 .strip-label {
@@ -346,13 +358,14 @@ body {
 }
 .strip-label span { font-size: 11px; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text3); }
 
-/* Keep old .section-label as alias */
+/* Section labels inside strips-area */
 .section-label {
   font-size: 10px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.6px; color: var(--text3); margin-bottom: 8px;
+  letter-spacing: 0.8px; color: var(--accent-text); margin-bottom: 8px;
   display: flex; align-items: center; justify-content: space-between;
+  opacity: 0.75;
 }
-.section-label .updated { font-weight: 400; font-size: 11px; text-transform: none; letter-spacing: 0; color: var(--text3); }
+.section-label .updated { font-weight: 400; font-size: 11px; text-transform: none; letter-spacing: 0; color: var(--text3); opacity: 1; }
 
 /* ── Market Strip ── */
 .market-strip { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0; }
@@ -363,9 +376,14 @@ body {
   flex-shrink: 0; padding: 10px 14px; background: var(--surface);
   border: 1px solid var(--border); border-radius: var(--radius);
   min-width: 130px; box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.15s; display: flex; flex-direction: column; gap: 4px;
+  transition: all 0.15s; display: flex; flex-direction: column; gap: 4px;
+  position: relative; overflow: hidden;
 }
-.coin-card:hover { box-shadow: var(--shadow); }
+.coin-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--card-accent, var(--border));
+}
+.coin-card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
 .coin-card.loading { opacity: 0.5; }
 .coin-top { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
 .coin-badge {
@@ -382,9 +400,9 @@ body {
 
 /* ── Calculator ── */
 .calc-bar {
-  background: var(--surface); border: 1px solid var(--border);
+  background: var(--surface2); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 16px 20px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
 }
 .calc-header {
   display: flex; align-items: center; justify-content: space-between;
@@ -429,13 +447,14 @@ body {
 
 /* ── Daily Focus ── */
 .focus-bar {
-  padding: 10px 28px; background: var(--surface);
+  padding: 10px 28px 10px 32px; background: #fafaf9;
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; gap: 12px;
+  border-left: 3px solid #f59e0b;
 }
 .focus-label {
   font-size: 10px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.6px; color: var(--text3); flex-shrink: 0;
+  letter-spacing: 0.6px; color: #92400e; flex-shrink: 0;
 }
 .focus-items { display: flex; gap: 6px; flex: 1; flex-wrap: wrap; }
 .focus-input {
@@ -862,6 +881,59 @@ kbd {
   font-size: 10px; font-weight: 700; vertical-align: middle;
   line-height: 1.4;
 }
+
+/* ── Per-panel accent top borders ── */
+#panel-tasks    .panel-card { border-top: 3px solid #4F46E5; }
+#panel-calendar .panel-card { border-top: 3px solid #7C3AED; }
+#panel-resources .panel-card { border-top: 3px solid #0891B2; }
+#panel-contacts .panel-card { border-top: 3px solid #059669; }
+#panel-social   .panel-card { border-top: 3px solid #1D9BF0; }
+#panel-ideas    .panel-card { border-top: 3px solid #D97706; }
+#panel-notes    .panel-card { border-top: 3px solid #16A34A; }
+#panel-images   .panel-card { border-top: 3px solid #DB2777; }
+
+/* ── Richer topbar greeting ── */
+.topbar-greeting { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; color: var(--text); }
+.topbar { border-bottom: 1px solid var(--border); background: var(--surface); }
+
+/* ── Richer quote bar ── */
+.quote-bar { background: linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 100%); }
+
+/* ── Idea cards — left border accent ── */
+.idea-card { border-left: 3px solid #D97706; }
+
+/* ── Contact avatars — vary color by index (set via JS) ── */
+.contact-avatar { font-weight: 700; }
+
+/* ── Richer capture bar ── */
+.capture-bar { background: var(--surface); border-bottom: 1px solid var(--border); }
+.capture-icon { color: var(--accent); font-size: 22px; font-weight: 800; }
+
+/* ── Task section headers with color ── */
+.task-section-header[data-urgency="overdue"] { color: var(--danger); }
+.task-section-header[data-urgency="today"]   { color: var(--warning); }
+.task-section-header[data-urgency="week"]    { color: var(--success); }
+.task-section-header[data-urgency="later"]   { color: var(--text2); }
+
+/* ── Richer focus bar inputs ── */
+.focus-input.filled { background: #fffbeb; border-color: #fde68a; color: var(--text); font-weight: 500; }
+
+/* ── X post suggestions: richer blue ── */
+.xpost-suggestion {
+  background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+  border-color: #c7d2fe;
+}
+.xpost-suggestion:hover { background: linear-gradient(135deg, #E0E7FF 0%, #C7D2FE 100%); }
+
+/* ── Nav item colors per tab ── */
+.nav-item[data-tab="tasks"].active    { background: rgba(79,70,229,0.22);  color: #a5b4fc; box-shadow: inset 3px 0 0 #4F46E5; }
+.nav-item[data-tab="calendar"].active { background: rgba(124,58,237,0.22); color: #c4b5fd; box-shadow: inset 3px 0 0 #7C3AED; }
+.nav-item[data-tab="resources"].active{ background: rgba(8,145,178,0.22);  color: #67e8f9; box-shadow: inset 3px 0 0 #0891B2; }
+.nav-item[data-tab="contacts"].active { background: rgba(5,150,105,0.22);  color: #6ee7b7; box-shadow: inset 3px 0 0 #059669; }
+.nav-item[data-tab="social"].active   { background: rgba(29,155,240,0.22); color: #7dd3fc; box-shadow: inset 3px 0 0 #1D9BF0; }
+.nav-item[data-tab="ideas"].active    { background: rgba(217,119,6,0.22);  color: #fcd34d; box-shadow: inset 3px 0 0 #D97706; }
+.nav-item[data-tab="notes"].active    { background: rgba(22,163,74,0.22);  color: #86efac; box-shadow: inset 3px 0 0 #16A34A; }
+.nav-item[data-tab="images"].active   { background: rgba(219,39,119,0.22); color: #f9a8d4; box-shadow: inset 3px 0 0 #DB2777; }
 </style>
 </head>
 <body>
@@ -993,32 +1065,36 @@ kbd {
     <span class="weather-loading">Loading weather...</span>
   </div>
 
-  <!-- Market -->
-  <div class="section-label">Markets <span class="updated" id="marketUpdated"></span></div>
-  <div class="market-strip" id="marketStrip"></div>
-
-  <!-- NFT Collections -->
-  <div class="section-label">NFT Collections <span class="updated" id="nftUpdated"></span></div>
-  <div class="market-strip" id="nftStrip"></div>
-
-  <!-- ETH/USDC Calculator -->
-  <div class="calc-bar">
-    <div class="calc-header">
-      <div class="calc-rate" id="calcRateWrap">1 ETH = <b id="calcRate">—</b> USDC</div>
-      <button class="calc-toggle" id="calcToggle" onclick="toggleRateHidden()">Practice mode</button>
+  <!-- Strips Area: Markets + NFTs + Calc -->
+  <div class="strips-area">
+    <div class="strip-row">
+      <div class="section-label">Markets <span class="updated" id="marketUpdated"></span></div>
+      <div class="market-strip" id="marketStrip"></div>
     </div>
-    <div class="calc-inputs">
-      <div class="calc-field">
-        <label>ETH</label>
-        <input type="number" id="calcEth" placeholder="0.0" step="0.001" oninput="calcFromEth()">
-      </div>
-      <div class="calc-arrow">\u21C4</div>
-      <div class="calc-field">
-        <label>USDC</label>
-        <input type="number" id="calcUsdc" placeholder="0.00" step="0.01" oninput="calcFromUsdc()">
+    <div class="strip-row">
+      <div class="section-label">NFT Collections <span class="updated" id="nftUpdated"></span></div>
+      <div class="market-strip" id="nftStrip"></div>
+    </div>
+    <div class="strip-row" style="border-bottom:none;padding-bottom:0">
+      <div class="calc-bar">
+        <div class="calc-header">
+          <div class="calc-rate" id="calcRateWrap">1 ETH = <b id="calcRate">—</b> USDC</div>
+          <button class="calc-toggle" id="calcToggle" onclick="toggleRateHidden()">Practice mode</button>
+        </div>
+        <div class="calc-inputs">
+          <div class="calc-field">
+            <label>ETH</label>
+            <input type="number" id="calcEth" placeholder="0.0" step="0.001" oninput="calcFromEth()">
+          </div>
+          <div class="calc-arrow">&#x21C4;</div>
+          <div class="calc-field">
+            <label>USDC</label>
+            <input type="number" id="calcUsdc" placeholder="0.00" step="0.01" oninput="calcFromUsdc()">
+          </div>
+        </div>
+        <div class="calc-refs" id="calcRefs"></div>
       </div>
     </div>
-    <div class="calc-refs" id="calcRefs"></div>
   </div>
 
   <!-- Daily Focus -->
@@ -1971,11 +2047,17 @@ function removeLink(i) { links.splice(i, 1); renderLinks(); }
 function renderContacts() {
   const list = document.getElementById('contactList');
   if (!contacts.length) { list.innerHTML = '<li class="empty-state">No contacts yet</li>'; return; }
+  const AVATAR_COLORS = [
+    ['#EEF2FF','#3730A3'],['#FFF7ED','#9A3412'],['#F0FDF4','#166534'],
+    ['#EFF6FF','#1E40AF'],['#FDF4FF','#6B21A8'],['#ECFDF5','#065F46'],
+    ['#FEF3C7','#92400E'],['#FCE7F3','#9D174D'],['#F0F9FF','#0C4A6E'],
+  ];
   list.innerHTML = contacts.map((c, i) => {
     const ini = c.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
     const det = c.note || c.email || c.phone || '';
+    const [bg, col] = AVATAR_COLORS[i % AVATAR_COLORS.length];
     return `<li class="item-row">
-      <div class="contact-avatar">${esc(ini)}</div>
+      <div class="contact-avatar" style="background:${bg};color:${col}">${esc(ini)}</div>
       <div class="contact-info" onclick="openModal('contact',${i})">
         <div class="contact-name">${esc(c.name)}</div>
         <div class="contact-detail">${esc(det)}</div>
