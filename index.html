@@ -1285,13 +1285,18 @@ function applyRateHidden() {
 // ══════════════════════════════════════
 // NFT Collections
 // ══════════════════════════════════════
+// source values:
+//   'coingecko'     — CoinGecko /nfts/{cgId} → floor_price.native_currency
+//   'alchemy-floor' — Alchemy getFloorPrice (ETH only, OpenSea-backed)
+//   'alchemy-meta'  — Alchemy getContractMetadata (non-ETH chains: shows supply instead of floor)
+//   null            — no live source, card shows chain label only
 const NFTS = [
-  { id:'pudgy-penguins', name:'Pudgy Penguins', color:'#3498db', chain:'ETH', cgId:'pudgy-penguins' },
-  { id:'bayc', name:'Bored Apes', color:'#d4a843', chain:'ETH', cgId:'bored-ape-yacht-club' },
-  { id:'mayc', name:'Mutant Apes', color:'#7cb342', chain:'ETH', cgId:'mutant-ape-yacht-club' },
-  { id:'zth', name:'Zero to Hero', color:'#7c3aed', chain:'Abstract', cgId:null },
-  { id:'frankys', name:"Franky's Dinner", color:'#e54d4d', chain:'ETH', cgId:null },
-  { id:'nibbles', name:'Nibbles', color:'#ff9800', chain:'ETH', cgId:null },
+  { id:'pudgy-penguins', name:'Pudgy Penguins', color:'#3498db', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0xBd3531dA5CF5857e7CfAA92426877b022e612cf8' },
+  { id:'bayc', name:'Bored Apes', color:'#d4a843', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D' },
+  { id:'mayc', name:'Mutant Apes', color:'#7cb342', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0x60E4d786628Fea6478F785A6d7e704777c86a7c6' },
+  { id:'zth', name:'Zero to Hero', color:'#7c3aed', chain:'Abstract', source:'alchemy-meta', alchemyChain:'abstract-mainnet', contract:'0x09bb4c785165915e66f4a645bc978a6c885a0319' },
+  { id:'frankys', name:"Franky's Dinner", color:'#e54d4d', chain:'ETH', source:null },
+  { id:'nibbles', name:'Nibbles', color:'#ff9800', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0x5e52d41f0e40d7cdb204db0d09659846f7404547' },
 ];
 
 function renderNFTLoading() {
@@ -1302,22 +1307,62 @@ function renderNFTLoading() {
         <div><div class="coin-name">${esc(n.name)}</div><div class="coin-symbol">${n.chain}</div></div>
       </div>
       <div class="coin-price" style="font-size:16px;color:var(--text2)">--</div>
-      <div class="coin-change">${n.cgId ? 'Loading...' : n.chain}</div>
+      <div class="coin-change">${n.source ? 'Loading...' : n.chain}</div>
     </div>
   `).join('');
 }
 
 let nftCache = load('dash_nft_cache', null);
+// Migrate: old cache stored raw CoinGecko JSON; new cache stores normalized { kind, ... }
+if (nftCache?.data) {
+  const sample = Object.values(nftCache.data)[0];
+  if (sample && sample.kind === undefined) {
+    nftCache = null;
+    localStorage.removeItem('dash_nft_cache');
+  }
+}
+
+async function fetchOneNFT(nft) {
+  if (nft.source === 'coingecko') {
+    const r = await fetch(`https://api.coingecko.com/api/v3/nfts/${nft.cgId}`);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    return {
+      kind: 'floor',
+      floorNative: j?.floor_price?.native_currency,
+      nativeSymbol: 'ETH',
+      change24h: j?.floor_price_in_usd_24h_percentage_change
+    };
+  }
+  if (nft.source === 'alchemy-floor') {
+    const r = await fetch(`https://${nft.alchemyChain}.g.alchemy.com/nft/v3/demo/getFloorPrice?contractAddress=${nft.contract}`);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    const fp = j?.openSea?.floorPrice;
+    return { kind: 'floor', floorNative: fp, nativeSymbol: j?.openSea?.priceCurrency || 'ETH', change24h: null };
+  }
+  if (nft.source === 'alchemy-meta') {
+    const r = await fetch(`https://${nft.alchemyChain}.g.alchemy.com/nft/v3/demo/getContractMetadata?contractAddress=${nft.contract}`);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    return {
+      kind: 'meta',
+      totalSupply: j?.totalSupply ? parseInt(j.totalSupply, 10) : null,
+      collName: j?.name || null
+    };
+  }
+  return null;
+}
 
 async function fetchNFTs() {
   const data = {};
   let anyOk = false;
-  for (const nft of NFTS.filter(n => n.cgId)) {
+  for (const nft of NFTS.filter(n => n.source)) {
     try {
-      const res = await fetch(`https://api.coingecko.com/api/v3/nfts/${nft.cgId}`);
-      if (res.ok) { data[nft.id] = await res.json(); anyOk = true; }
+      const result = await fetchOneNFT(nft);
+      if (result) { data[nft.id] = result; anyOk = true; }
     } catch {}
-    // Spacing between calls to avoid rate limits
+    // Spacing between calls to avoid upstream rate limits
     await new Promise(r => setTimeout(r, 600));
   }
   if (anyOk) {
@@ -1325,32 +1370,37 @@ async function fetchNFTs() {
     nftCache = { data: { ...(nftCache?.data || {}), ...data }, fetchedAt: Date.now() };
     save('dash_nft_cache', nftCache);
   }
-  const src = anyOk ? nftCache : nftCache; // always render whatever we have
-  renderNFTData(src?.data || {}, { cached: !anyOk, fetchedAt: src?.fetchedAt });
+  renderNFTData(nftCache?.data || {}, { cached: !anyOk, fetchedAt: nftCache?.fetchedAt });
 }
 
 function renderNFTData(data, meta = {}) {
   document.getElementById('nftStrip').innerHTML = NFTS.map(n => {
     const d = data[n.id];
-    let floor = '\u2014', changeStr = n.chain, changeClass = '';
-    if (d && d.floor_price) {
-      const fp = d.floor_price.native_currency;
-      floor = fp < 1 ? fp.toFixed(4) + ' ETH' : fp.toFixed(2) + ' ETH';
-      const change = d.floor_price_in_usd_24h_percentage_change;
-      if (change != null) {
-        const up = change >= 0;
-        changeStr = (up ? '+' : '') + change.toFixed(2) + '%';
+    let price = '\u2014', changeStr = n.chain, changeClass = '';
+
+    if (d?.kind === 'floor' && d.floorNative != null) {
+      const fp = d.floorNative, sym = d.nativeSymbol || 'ETH';
+      price = fp < 1 ? fp.toFixed(4) + ' ' + sym : fp.toFixed(2) + ' ' + sym;
+      if (d.change24h != null) {
+        const up = d.change24h >= 0;
+        changeStr = (up ? '+' : '') + d.change24h.toFixed(2) + '%';
         changeClass = up ? 'up' : 'down';
+      } else {
+        changeStr = 'floor ' + n.chain;
       }
-    } else if (!n.cgId) {
+    } else if (d?.kind === 'meta') {
+      price = d.totalSupply != null ? d.totalSupply.toLocaleString() : '\u2014';
+      changeStr = n.chain + ' • supply';
+    } else if (!n.source) {
       changeStr = n.chain + ' • manual';
     }
+
     return `<div class="coin-card">
       <div class="coin-top">
         <div class="coin-badge" style="background:${n.color}">${n.name[0]}</div>
         <div><div class="coin-name">${esc(n.name)}</div><div class="coin-symbol">${n.chain}</div></div>
       </div>
-      <div class="coin-price" style="font-size:16px">${floor}</div>
+      <div class="coin-price" style="font-size:16px">${price}</div>
       <div class="coin-change ${changeClass}">${changeStr}</div>
     </div>`;
   }).join('');
