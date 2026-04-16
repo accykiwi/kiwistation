@@ -780,6 +780,41 @@ kbd {
   letter-spacing: 0.6px; color: var(--text2); margin-bottom: 4px;
 }
 
+/* ── Today Events Notification Banner ── */
+.today-notif {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  animation: slideDown 0.25s ease;
+}
+@keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.today-notif-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.today-notif-body { flex: 1; }
+.today-notif-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.today-notif-events { display: flex; flex-direction: column; gap: 3px; }
+.today-notif-event { font-size: 12px; color: rgba(255,255,255,0.85); display: flex; align-items: center; gap: 6px; }
+.today-notif-event-time { font-weight: 700; color: #c7d2fe; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.today-notif-dismiss {
+  margin-left: auto; flex-shrink: 0;
+  padding: 5px 14px; border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1); color: #fff; border-radius: 999px;
+  font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;
+  transition: background 0.15s; align-self: center;
+}
+.today-notif-dismiss:hover { background: rgba(255,255,255,0.22); }
+
+/* ── Calendar events in day detail ── */
+.cal-event-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: var(--radius-sm);
+  background: #F5F3FF; border: 1px solid #DDD6FE;
+  margin-bottom: 6px;
+}
+.cal-event-time { font-size: 11px; font-weight: 700; color: #7C3AED; flex-shrink: 0; min-width: 40px; }
+.cal-event-text { flex: 1; font-size: 13px; font-weight: 500; color: var(--text); }
+.cal-event-dot-ev { background: #7C3AED !important; }
+
 /* ── Due Date Badges ── */
 .due-badge {
   font-size: 11px; font-weight: 600; padding: 2px 8px;
@@ -1054,8 +1089,12 @@ kbd {
       <button class="capture-btn" onclick="capture('task')" title="Save as task">Task</button>
       <button class="capture-btn primary" onclick="capture('idea')" title="Save as idea (Enter)">Idea</button>
       <button class="capture-btn" onclick="capture('note')" title="Save as note">Note</button>
+      <button class="capture-btn" onclick="capture('calendar')" title="Add to calendar" style="border-color:#7C3AED;color:#7C3AED">&#128197; Cal</button>
     </div>
   </div>
+
+  <!-- Today's Events Notification -->
+  <div id="todayNotif" style="display:none"></div>
 
   <!-- Toast -->
   <div class="toast" id="toast"></div>
@@ -1332,6 +1371,29 @@ kbd {
   </div>
 </div>
 
+<!-- Calendar Event Capture Modal -->
+<div class="modal-overlay" id="calCaptureModal" onclick="if(event.target===this)closeModals()">
+  <div class="modal">
+    <h3>&#128197; Add to Calendar</h3>
+    <div class="modal-field">
+      <label>Event</label>
+      <input type="text" id="calCapText" placeholder="What's happening?">
+    </div>
+    <div class="modal-field">
+      <label>Date</label>
+      <input type="date" id="calCapDate">
+    </div>
+    <div class="modal-field">
+      <label>Time <span style="font-weight:400;color:var(--text3)">(optional)</span></label>
+      <input type="time" id="calCapTime">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModals()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCalCapture()">Add Event</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════
 // Storage
@@ -1351,6 +1413,7 @@ let socials  = load('dash_socials', []);
 let ideas    = load('dash_ideas', []);
 let notes    = load('dash_notes', []);
 let xposts   = load('dash_xposts', []);
+let calEvents = load('dash_cal_events', []); // { id, text, date, time, created }
 let activeTab = load('dash_tab', 'tasks');
 let editIdx  = null;
 let activeNoteId = null;
@@ -1652,6 +1715,13 @@ function placeholderCard(c) {
 function capture(type) {
   const input = document.getElementById('captureInput');
   const text = input.value.trim();
+
+  if (type === 'calendar') {
+    // Open date picker modal — text can be empty (user fills in modal)
+    openCalCapture(text);
+    return; // don't clear input until modal is saved
+  }
+
   if (!text) return;
 
   if (type === 'task') {
@@ -1673,6 +1743,46 @@ function capture(type) {
   }
 
   input.value = '';
+}
+
+// ── Calendar event capture ──
+function openCalCapture(prefillText) {
+  document.getElementById('calCapText').value = prefillText || '';
+  document.getElementById('calCapDate').value = today();
+  document.getElementById('calCapTime').value = '';
+  document.getElementById('calCaptureModal').classList.add('open');
+  setTimeout(() => {
+    const el = document.getElementById(prefillText ? 'calCapDate' : 'calCapText');
+    el && el.focus();
+  }, 50);
+}
+
+function saveCalCapture() {
+  const text = document.getElementById('calCapText').value.trim();
+  const date = document.getElementById('calCapDate').value;
+  const time = document.getElementById('calCapTime').value || null;
+  if (!text || !date) { showToast('Please enter an event and date'); return; }
+
+  calEvents.push({ id: 'ev_' + Date.now(), text, date, time, created: Date.now() });
+  save('dash_cal_events', calEvents);
+
+  // Clear capture input too
+  const inp = document.getElementById('captureInput');
+  if (inp && inp.value.trim() === text) inp.value = '';
+
+  closeModals();
+  renderCalendar();
+  showToast('Added to Calendar \u2013 ' + fmtEventDate(date));
+}
+
+function deleteCalEvent(id) {
+  calEvents = calEvents.filter(e => e.id !== id);
+  save('dash_cal_events', calEvents);
+  renderCalendar();
+}
+
+function fmtEventDate(dateStr) {
+  return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
 }
 
 let toastTimeout;
@@ -2454,18 +2564,51 @@ function calSelectDate(dateStr) {
 }
 
 function updateCalendarTabBadge() {
-  const btn = document.getElementById('calTabBtn');
-  if (!btn) return;
+  const badge = document.getElementById('calBadge');
+  if (!badge) return;
   const t = today();
-  const overdue = tasks.filter(x => !x.done && x.dueDate && x.dueDate <= t).length;
-  const existing = btn.querySelector('.tab-badge');
-  if (existing) existing.remove();
-  if (overdue > 0) {
-    const badge = document.createElement('span');
-    badge.className = 'tab-badge';
-    badge.textContent = overdue;
-    btn.appendChild(badge);
-  }
+  const overdue  = tasks.filter(x => !x.done && x.dueDate && x.dueDate <= t).length;
+  const todayEvs = calEvents.filter(e => e.date === t).length;
+  const total = overdue + todayEvs;
+  badge.textContent = total;
+  badge.classList.toggle('hidden', total === 0);
+}
+
+// ── Today's event notification ──
+function checkTodayEvents() {
+  const t = today();
+  const notifiedOn = load('dash_notif_date', '');
+  if (notifiedOn === t) return; // already shown today
+
+  const todayEvs = calEvents.filter(e => e.date === t)
+    .sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+  if (!todayEvs.length) return;
+
+  const banner = document.getElementById('todayNotif');
+  if (!banner) return;
+
+  const items = todayEvs.map(ev =>
+    `<div class="today-notif-event">
+      ${ev.time ? `<span class="today-notif-event-time">${ev.time}</span>` : ''}
+      <span>${esc(ev.text)}</span>
+    </div>`
+  ).join('');
+
+  banner.innerHTML = `<div class="today-notif">
+    <span class="today-notif-icon">&#128197;</span>
+    <div class="today-notif-body">
+      <div class="today-notif-title">You have ${todayEvs.length} event${todayEvs.length > 1 ? 's' : ''} today</div>
+      <div class="today-notif-events">${items}</div>
+    </div>
+    <button class="today-notif-dismiss" onclick="dismissEventsBanner()">Got it ✓</button>
+  </div>`;
+  banner.style.display = 'block';
+}
+
+function dismissEventsBanner() {
+  save('dash_notif_date', today());
+  const banner = document.getElementById('todayNotif');
+  if (banner) banner.style.display = 'none';
 }
 
 function renderCalendar() {
@@ -2487,6 +2630,13 @@ function renderCalendar() {
     }
   });
 
+  // Build events by date map
+  const eventsByDate = {};
+  calEvents.forEach(ev => {
+    if (!eventsByDate[ev.date]) eventsByDate[ev.date] = [];
+    eventsByDate[ev.date].push(ev);
+  });
+
   const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   let html = DAYS.map(d => `<div class="cal-dow">${d}</div>`).join('');
 
@@ -2494,27 +2644,24 @@ function renderCalendar() {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const daysInPrev  = new Date(year, month, 0).getDate();
 
-  // Prev month padding
   const prevMonth = month === 0 ? 11 : month - 1;
   const prevYear  = month === 0 ? year - 1 : year;
   for (let i = firstDay - 1; i >= 0; i--) {
     const d = daysInPrev - i;
     const ds = `${prevYear}-${String(prevMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    html += calDayHtml(d, ds, true, tasksByDate, t);
+    html += calDayHtml(d, ds, true, tasksByDate, eventsByDate, t);
   }
-  // Current month
   for (let d = 1; d <= daysInMonth; d++) {
     const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    html += calDayHtml(d, ds, false, tasksByDate, t);
+    html += calDayHtml(d, ds, false, tasksByDate, eventsByDate, t);
   }
-  // Next month padding
   const total = firstDay + daysInMonth;
   const nextRows = Math.ceil(total / 7) * 7 - total;
   const nextMonth = month === 11 ? 0 : month + 1;
   const nextYear  = month === 11 ? year + 1 : year;
   for (let d = 1; d <= nextRows; d++) {
     const ds = `${nextYear}-${String(nextMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    html += calDayHtml(d, ds, true, tasksByDate, t);
+    html += calDayHtml(d, ds, true, tasksByDate, eventsByDate, t);
   }
 
   grid.innerHTML = html;
@@ -2522,27 +2669,34 @@ function renderCalendar() {
   updateCalendarTabBadge();
 }
 
-function calDayHtml(dayNum, dateStr, otherMonth, tasksByDate, todayStr) {
+function calDayHtml(dayNum, dateStr, otherMonth, tasksByDate, eventsByDate, todayStr) {
   const isToday    = dateStr === todayStr;
   const isSelected = dateStr === calSelectedDate;
   const dayTasks   = tasksByDate[dateStr] || [];
+  const dayEvents  = eventsByDate[dateStr] || [];
 
   let cls = 'cal-day';
   if (isToday)    cls += ' today';
   if (isSelected) cls += ' selected';
   if (otherMonth) cls += ' other-month';
 
-  const dots = dayTasks.slice(0, 6).map(task => {
+  const taskDots = dayTasks.slice(0, 4).map(task => {
     const dueCls = getDueDateClass(task.dueDate);
-    const color = dueCls === 'overdue' ? 'var(--red)'
-                : dueCls === 'today'   ? 'var(--orange)'
-                : 'var(--green)';
+    const color = dueCls === 'overdue' ? 'var(--danger)'
+                : dueCls === 'today'   ? 'var(--warning)'
+                : 'var(--success)';
     return `<div class="cal-dot" style="background:${color}"></div>`;
   }).join('');
 
+  const eventDots = dayEvents.slice(0, 3).map(() =>
+    `<div class="cal-dot" style="background:#7C3AED"></div>`
+  ).join('');
+
+  const allDots = taskDots + eventDots;
+
   return `<div class="${cls}" onclick="calSelectDate('${dateStr}')">
     <div class="cal-day-num">${dayNum}</div>
-    ${dots ? `<div class="cal-dots">${dots}</div>` : ''}
+    ${allDots ? `<div class="cal-dots">${allDots}</div>` : ''}
   </div>`;
 }
 
@@ -2551,7 +2705,9 @@ function renderCalDayDetail() {
   if (!el) return;
   if (!calSelectedDate) { el.innerHTML = ''; return; }
 
-  const dayTasks = tasks.filter(t => t.dueDate === calSelectedDate && !t.done);
+  const dayEvents = calEvents.filter(e => e.date === calSelectedDate)
+    .sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+  const dayTasks  = tasks.filter(t => t.dueDate === calSelectedDate && !t.done);
   const doneTasks = tasks.filter(t => t.dueDate === calSelectedDate && t.done);
 
   const labelDate = new Date(calSelectedDate + 'T12:00:00').toLocaleDateString('en-US', {
@@ -2561,7 +2717,20 @@ function renderCalDayDetail() {
   let html = `<div class="cal-day-detail">
     <div class="cal-day-detail-title">${labelDate}</div>`;
 
+  // Events section
+  if (dayEvents.length) {
+    html += `<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:#7C3AED;margin-bottom:8px">Events</div>`;
+    html += dayEvents.map(ev => `
+      <div class="cal-event-row">
+        <span class="cal-event-time">${ev.time ? ev.time : '—'}</span>
+        <span class="cal-event-text">${esc(ev.text)}</span>
+        <button class="btn-icon" onclick="deleteCalEvent('${ev.id}')" style="color:var(--text3)">&times;</button>
+      </div>`).join('');
+  }
+
+  // Tasks section
   if (dayTasks.length || doneTasks.length) {
+    if (dayEvents.length) html += `<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--text3);margin:10px 0 8px">Tasks</div>`;
     const allDay = [...dayTasks, ...doneTasks];
     html += `<ul class="item-list">${allDay.map(task => {
       const i = tasks.indexOf(task);
@@ -2571,14 +2740,15 @@ function renderCalDayDetail() {
         <button class="btn-icon" onclick="removeTask(${i})">&times;</button>
       </li>`;
     }).join('')}</ul>`;
-  } else {
-    html += '<div style="color:var(--text2);font-size:13px;padding:4px 0">No tasks for this day.</div>';
+  } else if (!dayEvents.length) {
+    html += '<div style="color:var(--text2);font-size:13px;padding:4px 0">Nothing scheduled for this day.</div>';
   }
 
-  html += `<div class="cal-quick-add">
+  html += `<div class="cal-quick-add" style="margin-top:12px">
     <input type="text" id="calQuickInput" placeholder="Add task for ${labelDate}..."
       onkeydown="if(event.key==='Enter')calQuickAdd()">
-    <button class="btn btn-primary btn-sm" onclick="calQuickAdd()">Add</button>
+    <button class="btn btn-primary btn-sm" onclick="calQuickAdd()">+ Task</button>
+    <button class="btn btn-ghost btn-sm" onclick="openCalCapture('')" style="border-color:#7C3AED;color:#7C3AED">+ Event</button>
   </div></div>`;
 
   el.innerHTML = html;
@@ -3327,6 +3497,7 @@ pomoResume();
 initImgDrop();
 updateReviewMenu();
 checkReviewsOnLoad();
+checkTodayEvents();
 
 setInterval(fetchMarket, 180000); // 3 min — 3 endpoints per cycle
 setInterval(fetchNFTs, 600000);   // 10 min — rate-limit friendly
