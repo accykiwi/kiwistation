@@ -1770,27 +1770,37 @@ if (nftCache?.data) {
 let nftBaseline = load('dash_nft_baseline', null);
 const NFT_BASELINE_TTL = 20 * 60 * 60 * 1000; // rotate baseline every ~20 hours
 
-async function fetchOneNFT(nft) {
+// CoinGecko NFT 24hr change data — cached separately (1h TTL) to avoid rate-limits
+let nftCgCache = load('dash_nft_cg_cache', null);
+const NFT_CG_TTL = 60 * 60 * 1000; // 1 hour
+
+async function fetchNFTChanges() {
+  // Return cached data if still fresh
+  if (nftCgCache && (Date.now() - nftCgCache.ts) < NFT_CG_TTL) return nftCgCache.changes;
+
+  const changes = {};
+  for (const nft of NFTS.filter(n => n.cgId)) {
+    try {
+      const j = await fetchJsonWithRetry(`https://api.coingecko.com/api/v3/nfts/${nft.cgId}`, 1);
+      changes[nft.id] = j?.floor_price_in_usd_24h_percentage_change ?? null;
+    } catch {}
+    await new Promise(r => setTimeout(r, 1200)); // 1.2s between CG NFT calls
+  }
+
+  if (Object.keys(changes).length) {
+    nftCgCache = { changes, ts: Date.now() };
+    save('dash_nft_cg_cache', nftCgCache);
+  }
+  return changes;
+}
+
+async function fetchOneNFT(nft, cgChange = null) {
   if (nft.source === 'alchemy-floor') {
-    // Fetch floor price (Alchemy) + 24hr change (CoinGecko) in parallel
-    const alchemyUrl = `https://${nft.alchemyChain}.g.alchemy.com/nft/v3/demo/getFloorPrice?contractAddress=${nft.contract}`;
-    const cgUrl = nft.cgId ? `https://api.coingecko.com/api/v3/nfts/${nft.cgId}` : null;
-
-    const [alchemyRes, cgRes] = await Promise.allSettled([
-      fetch(alchemyUrl).then(r => r.ok ? r.json() : Promise.reject(r.status)),
-      cgUrl ? fetch(cgUrl).then(r => r.ok ? r.json() : Promise.reject(r.status)) : Promise.resolve(null),
-    ]);
-
-    const alch = alchemyRes.status === 'fulfilled' ? alchemyRes.value : null;
-    const cg   = cgRes.status   === 'fulfilled' ? cgRes.value   : null;
-
-    const fp  = alch?.openSea?.floorPrice ?? null;
-    const sym = alch?.openSea?.priceCurrency || 'ETH';
-    // CoinGecko NFT endpoint returns 24hr % change in USD — good enough for ↑↓ direction
-    const change24h = cg?.floor_price_in_usd_24h_percentage_change ?? null;
-
-    if (fp == null && change24h == null) throw new Error('no data');
-    return { kind: 'floor', floorNative: fp, nativeSymbol: sym, change24h };
+    const r = await fetch(`https://${nft.alchemyChain}.g.alchemy.com/nft/v3/demo/getFloorPrice?contractAddress=${nft.contract}`);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    const fp = j?.openSea?.floorPrice ?? null;
+    return { kind: 'floor', floorNative: fp, nativeSymbol: j?.openSea?.priceCurrency || 'ETH', change24h: cgChange };
   }
   if (nft.source === 'alchemy-meta') {
     const r = await fetch(`https://${nft.alchemyChain}.g.alchemy.com/nft/v3/demo/getContractMetadata?contractAddress=${nft.contract}`);
@@ -1806,11 +1816,15 @@ async function fetchOneNFT(nft) {
 }
 
 async function fetchNFTs() {
+  // Step 1: fetch CG 24hr changes sequentially (cached 1h, won't re-hit CG until stale)
+  const cgChanges = await fetchNFTChanges();
+
+  // Step 2: fetch Alchemy floor prices sequentially
   const data = {};
   let anyOk = false;
   for (const nft of NFTS.filter(n => n.source)) {
     try {
-      const result = await fetchOneNFT(nft);
+      const result = await fetchOneNFT(nft, cgChanges[nft.id] ?? null);
       if (result) { data[nft.id] = result; anyOk = true; }
     } catch {}
     // Spacing between calls to avoid upstream rate limits
