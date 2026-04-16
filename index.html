@@ -1735,12 +1735,12 @@ function applyRateHidden() {
 //   'alchemy-meta'  — Alchemy getContractMetadata (non-ETH chains: shows supply instead of floor)
 //   null            — no live source, card shows chain label only
 const NFTS = [
-  { id:'pudgy-penguins', name:'Pudgy Penguins', color:'#3498db', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0xBd3531dA5CF5857e7CfAA92426877b022e612cf8' },
-  { id:'bayc', name:'Bored Apes', color:'#d4a843', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D' },
-  { id:'mayc', name:'Mutant Apes', color:'#7cb342', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0x60E4d786628Fea6478F785A6d7e704777c86a7c6' },
+  { id:'pudgy-penguins', name:'Pudgy Penguins', color:'#3498db', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0xBd3531dA5CF5857e7CfAA92426877b022e612cf8', cgId:'pudgy-penguins' },
+  { id:'bayc', name:'Bored Apes',    color:'#d4a843', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D', cgId:'bored-ape-yacht-club' },
+  { id:'mayc', name:'Mutant Apes',   color:'#7cb342', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0x60E4d786628Fea6478F785A6d7e704777c86a7c6', cgId:'mutant-ape-yacht-club' },
   { id:'w3pb', name:'Web3 Playboys', color:'#7c3aed', chain:'Abstract', source:'alchemy-meta', alchemyChain:'abstract-mainnet', contract:'0x09bb4c785165915e66f4a645bc978a6c885a0319' },
   { id:'frankys', name:"Franky's Dinner", color:'#e54d4d', chain:'ETH', source:null },
-  { id:'nibbles', name:'Nibbles', color:'#ff9800', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0x5e52d41f0e40d7cdb204db0d09659846f7404547' },
+  { id:'nibbles', name:'Nibbles',    color:'#ff9800', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0x5e52d41f0e40d7cdb204db0d09659846f7404547' },
 ];
 
 function renderNFTLoading() {
@@ -1771,23 +1771,26 @@ let nftBaseline = load('dash_nft_baseline', null);
 const NFT_BASELINE_TTL = 20 * 60 * 60 * 1000; // rotate baseline every ~20 hours
 
 async function fetchOneNFT(nft) {
-  if (nft.source === 'coingecko') {
-    const r = await fetch(`https://api.coingecko.com/api/v3/nfts/${nft.cgId}`);
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const j = await r.json();
-    return {
-      kind: 'floor',
-      floorNative: j?.floor_price?.native_currency,
-      nativeSymbol: 'ETH',
-      change24h: j?.floor_price_in_usd_24h_percentage_change
-    };
-  }
   if (nft.source === 'alchemy-floor') {
-    const r = await fetch(`https://${nft.alchemyChain}.g.alchemy.com/nft/v3/demo/getFloorPrice?contractAddress=${nft.contract}`);
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const j = await r.json();
-    const fp = j?.openSea?.floorPrice;
-    return { kind: 'floor', floorNative: fp, nativeSymbol: j?.openSea?.priceCurrency || 'ETH', change24h: null };
+    // Fetch floor price (Alchemy) + 24hr change (CoinGecko) in parallel
+    const alchemyUrl = `https://${nft.alchemyChain}.g.alchemy.com/nft/v3/demo/getFloorPrice?contractAddress=${nft.contract}`;
+    const cgUrl = nft.cgId ? `https://api.coingecko.com/api/v3/nfts/${nft.cgId}` : null;
+
+    const [alchemyRes, cgRes] = await Promise.allSettled([
+      fetch(alchemyUrl).then(r => r.ok ? r.json() : Promise.reject(r.status)),
+      cgUrl ? fetch(cgUrl).then(r => r.ok ? r.json() : Promise.reject(r.status)) : Promise.resolve(null),
+    ]);
+
+    const alch = alchemyRes.status === 'fulfilled' ? alchemyRes.value : null;
+    const cg   = cgRes.status   === 'fulfilled' ? cgRes.value   : null;
+
+    const fp  = alch?.openSea?.floorPrice ?? null;
+    const sym = alch?.openSea?.priceCurrency || 'ETH';
+    // CoinGecko NFT endpoint returns 24hr % change in USD — good enough for ↑↓ direction
+    const change24h = cg?.floor_price_in_usd_24h_percentage_change ?? null;
+
+    if (fp == null && change24h == null) throw new Error('no data');
+    return { kind: 'floor', floorNative: fp, nativeSymbol: sym, change24h };
   }
   if (nft.source === 'alchemy-meta') {
     const r = await fetch(`https://${nft.alchemyChain}.g.alchemy.com/nft/v3/demo/getContractMetadata?contractAddress=${nft.contract}`);
