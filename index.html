@@ -1479,9 +1479,10 @@ async function fetchWeather() {
 // Market
 // ══════════════════════════════════════
 const COINS = [
-  { id:'bitcoin', sym:'BTC', name:'Bitcoin', color:'#f7931a' },
-  { id:'ethereum', sym:'ETH', name:'Ethereum', color:'#627eea' },
-  { id:'solana', sym:'SOL', name:'Solana', color:'#9945ff' },
+  { id:'bitcoin',  sym:'BTC',  name:'Bitcoin',  color:'#f7931a', source:'coingecko' },
+  { id:'ethereum', sym:'ETH',  name:'Ethereum', color:'#627eea', source:'coingecko' },
+  { id:'solana',   sym:'SOL',  name:'Solana',   color:'#9945ff', source:'coingecko' },
+  { id:'pumpcade', sym:'PUMP', name:'Pumpcade', color:'#FF6B35', source:'dexscreener', address:'Eg2ymQ2aQqjMcibnmTt8erC6Tvk9PVpJZCxvVPJz2agu' },
 ];
 
 // Key market indicators (non-price metrics). Rendered after COINS.
@@ -1526,29 +1527,46 @@ async function fetchJsonWithRetry(url, retries = 1) {
 }
 
 async function fetchMarket() {
-  const ids = COINS.map(c => c.id).join(',');
+  const cgCoins = COINS.filter(c => c.source === 'coingecko');
+  const dexCoins = COINS.filter(c => c.source === 'dexscreener');
+
+  const ids = cgCoins.map(c => c.id).join(',');
   const priceUrl  = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`;
   const globalUrl = 'https://api.coingecko.com/api/v3/global';
   const fngUrl    = 'https://api.alternative.me/fng/?limit=2';
+  const dexUrls   = dexCoins.map(c => fetchJsonWithRetry(`https://api.dexscreener.com/latest/dex/tokens/${c.address}`, 1).then(j => ({ id: c.id, j })).catch(() => ({ id: c.id, j: null })));
 
-  // Fire all three in parallel — each is independent
-  const [priceRes, globalRes, fngRes] = await Promise.allSettled([
+  // Fire all in parallel — each is independent
+  const [priceRes, globalRes, fngRes, ...dexResults] = await Promise.allSettled([
     fetchJsonWithRetry(priceUrl, 1),
     fetchJsonWithRetry(globalUrl, 1),
     fetchJsonWithRetry(fngUrl, 1),
+    ...dexUrls,
   ]);
 
+  // Parse DexScreener results — pick highest-volume pair per token
+  const dexPrices = {};
+  for (const res of dexResults) {
+    if (res.status !== 'fulfilled' || !res.value?.j?.pairs?.length) continue;
+    const { id, j } = res.value;
+    const best = j.pairs.sort((a, b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0))[0];
+    dexPrices[id] = { usd: parseFloat(best.priceUsd) || null, usd_24h_change: best.priceChange?.h24 ?? null };
+  }
+
+  const anyDex = Object.keys(dexPrices).length > 0;
+  const prices = priceRes.status === 'fulfilled' ? { ...priceRes.value, ...dexPrices }
+               : { ...(marketCache?.prices || {}), ...dexPrices };
+
   const merged = {
-    prices: priceRes.status === 'fulfilled' ? priceRes.value : (marketCache?.prices || null),
+    prices,
     global: globalRes.status === 'fulfilled' ? globalRes.value?.data : (marketCache?.global || null),
     fng:    fngRes.status === 'fulfilled' ? fngRes.value?.data : (marketCache?.fng || null),
     fetchedAt: Date.now()
   };
 
-  const anySucceeded = priceRes.status === 'fulfilled' || globalRes.status === 'fulfilled' || fngRes.status === 'fulfilled';
+  const anySucceeded = priceRes.status === 'fulfilled' || globalRes.status === 'fulfilled' || fngRes.status === 'fulfilled' || anyDex;
   const allSucceeded = priceRes.status === 'fulfilled' && globalRes.status === 'fulfilled' && fngRes.status === 'fulfilled';
 
-  // Only persist when at least one fresh fetch worked
   if (anySucceeded) {
     marketCache = merged;
     save('dash_market_cache', marketCache);
@@ -1571,12 +1589,20 @@ async function fetchMarket() {
   document.getElementById('marketUpdated').textContent = label;
 }
 
+function fmtPrice(usd) {
+  if (usd == null) return '--';
+  if (usd >= 1) return usd.toLocaleString('en-US',{style:'currency',currency:'USD'});
+  if (usd >= 0.0001) return '$' + usd.toFixed(6);
+  // Very small — use scientific or significant figures
+  return '$' + usd.toPrecision(4);
+}
+
 function renderMarket(src) {
   const coinCards = COINS.map(c => {
     const d = src.prices?.[c.id];
-    if (!d) return placeholderCard(c);
-    const price = d.usd, change = d.usd_24h_change || 0, up = change >= 0;
-    const ps = price >= 1 ? price.toLocaleString('en-US',{style:'currency',currency:'USD'}) : '$'+price.toFixed(4);
+    if (!d || d.usd == null) return placeholderCard(c);
+    const price = d.usd, change = d.usd_24h_change ?? 0, up = change >= 0;
+    const ps = fmtPrice(price);
     return `<div class="coin-card"><div class="coin-top"><div class="coin-badge" style="background:${c.color}">${c.sym[0]}</div><div><div class="coin-name">${c.name}</div><div class="coin-symbol">${c.sym}</div></div></div><div class="coin-price">${ps}</div><div class="coin-change ${up?'up':'down'}">${up?'+':''}${change.toFixed(2)}%</div></div>`;
   }).join('');
 
@@ -1712,7 +1738,7 @@ const NFTS = [
   { id:'pudgy-penguins', name:'Pudgy Penguins', color:'#3498db', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0xBd3531dA5CF5857e7CfAA92426877b022e612cf8' },
   { id:'bayc', name:'Bored Apes', color:'#d4a843', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D' },
   { id:'mayc', name:'Mutant Apes', color:'#7cb342', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0x60E4d786628Fea6478F785A6d7e704777c86a7c6' },
-  { id:'zth', name:'Zero to Hero', color:'#7c3aed', chain:'Abstract', source:'alchemy-meta', alchemyChain:'abstract-mainnet', contract:'0x09bb4c785165915e66f4a645bc978a6c885a0319' },
+  { id:'w3pb', name:'Web3 Playboys', color:'#7c3aed', chain:'Abstract', source:'alchemy-meta', alchemyChain:'abstract-mainnet', contract:'0x09bb4c785165915e66f4a645bc978a6c885a0319' },
   { id:'frankys', name:"Franky's Dinner", color:'#e54d4d', chain:'ETH', source:null },
   { id:'nibbles', name:'Nibbles', color:'#ff9800', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0x5e52d41f0e40d7cdb204db0d09659846f7404547' },
 ];
@@ -1739,6 +1765,10 @@ if (nftCache?.data) {
     localStorage.removeItem('dash_nft_cache');
   }
 }
+
+// 24hr baseline — stores floor prices from ~24h ago so we can show % change
+let nftBaseline = load('dash_nft_baseline', null);
+const NFT_BASELINE_TTL = 20 * 60 * 60 * 1000; // rotate baseline every ~20 hours
 
 async function fetchOneNFT(nft) {
   if (nft.source === 'coingecko') {
@@ -1784,6 +1814,19 @@ async function fetchNFTs() {
     await new Promise(r => setTimeout(r, 600));
   }
   if (anyOk) {
+    // Rotate 24h baseline: if no baseline, or baseline is older than TTL, snapshot current
+    const now = Date.now();
+    if (!nftBaseline || (now - nftBaseline.ts) > NFT_BASELINE_TTL) {
+      const floors = {};
+      const merged = { ...(nftCache?.data || {}), ...data };
+      for (const [id, d] of Object.entries(merged)) {
+        if (d?.kind === 'floor' && d.floorNative != null) floors[id] = d.floorNative;
+      }
+      if (Object.keys(floors).length) {
+        nftBaseline = { floors, ts: now };
+        save('dash_nft_baseline', nftBaseline);
+      }
+    }
     // Merge with existing cache so a partial failure doesn't lose prior values
     nftCache = { data: { ...(nftCache?.data || {}), ...data }, fetchedAt: Date.now() };
     save('dash_nft_cache', nftCache);
@@ -1798,13 +1841,23 @@ function renderNFTData(data, meta = {}) {
 
     if (d?.kind === 'floor' && d.floorNative != null) {
       const fp = d.floorNative, sym = d.nativeSymbol || 'ETH';
-      price = fp < 1 ? fp.toFixed(4) + ' ' + sym : fp.toFixed(2) + ' ' + sym;
+      price = fp < 1 ? fp.toFixed(4) + ' ' + sym : fp.toFixed(4) + ' ' + sym;
+
+      // 24hr change: prefer API-provided, fall back to baseline delta
       if (d.change24h != null) {
         const up = d.change24h >= 0;
-        changeStr = (up ? '+' : '') + d.change24h.toFixed(2) + '%';
+        changeStr = (up ? '+' : '') + d.change24h.toFixed(2) + '% 24h';
         changeClass = up ? 'up' : 'down';
       } else {
-        changeStr = 'floor ' + n.chain;
+        const baseFloor = nftBaseline?.floors?.[n.id];
+        if (baseFloor != null && baseFloor !== fp) {
+          const chg = ((fp - baseFloor) / baseFloor) * 100;
+          const up = chg >= 0;
+          changeStr = (up ? '+' : '') + chg.toFixed(2) + '% 24h';
+          changeClass = up ? 'up' : 'down';
+        } else {
+          changeStr = 'floor ' + sym;
+        }
       }
     } else if (d?.kind === 'meta') {
       price = d.totalSupply != null ? d.totalSupply.toLocaleString() : '\u2014';
@@ -1818,7 +1871,7 @@ function renderNFTData(data, meta = {}) {
         <div class="coin-badge" style="background:${n.color}">${n.name[0]}</div>
         <div><div class="coin-name">${esc(n.name)}</div><div class="coin-symbol">${n.chain}</div></div>
       </div>
-      <div class="coin-price" style="font-size:16px">${price}</div>
+      <div class="coin-price" style="font-size:15px">${price}</div>
       <div class="coin-change ${changeClass}">${changeStr}</div>
     </div>`;
   }).join('');
