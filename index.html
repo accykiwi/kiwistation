@@ -710,6 +710,40 @@ body {
   .note-list-col { width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding-right: 0; padding-bottom: 12px; }
 }
 
+/* ── Profile ── */
+.profile-links-section { margin-bottom: 20px; }
+.profile-links-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text2); margin-bottom: 10px;
+}
+.profile-links-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.profile-link-row {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 10px;
+}
+.profile-link-icon {
+  width: 26px; height: 26px; border-radius: 6px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+}
+.profile-link-label {
+  font-size: 11px; color: var(--text2); font-weight: 600; white-space: nowrap;
+}
+.profile-link-val {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  background: none; border: none; outline: none; font-family: inherit;
+  width: 100%; padding: 0; cursor: text;
+}
+.profile-link-val::placeholder { color: var(--text2); font-weight: 400; }
+.profile-link-copy {
+  background: none; border: none; cursor: pointer; color: var(--text2);
+  padding: 2px 4px; border-radius: 4px; font-size: 13px; flex-shrink: 0;
+  transition: color 0.15s;
+}
+.profile-link-copy:hover { color: var(--text); }
+
 /* ── Images ── */
 .img-cat-bar {
   display: flex; align-items: center; gap: 8px;
@@ -1150,8 +1184,8 @@ kbd {
       <span>Notes</span>
     </button>
     <button class="nav-item" data-tab="images">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
-      <span>Images</span>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
+      <span>Profile</span>
     </button>
   </nav>
 
@@ -1375,9 +1409,18 @@ kbd {
     </div>
   </div>
 
-  <!-- Images Panel -->
+  <!-- Profile Panel -->
   <div class="panel" id="panel-images">
     <div class="panel-card">
+
+      <!-- Links section -->
+      <div class="profile-links-section">
+        <div class="profile-links-title">🔗 My Links</div>
+        <div class="profile-links-grid" id="profileLinksGrid"></div>
+      </div>
+
+      <!-- NFT image gallery -->
+      <div class="profile-links-title" style="margin-bottom:10px">🖼️ My NFTs</div>
       <div class="img-cat-bar">
         <div class="img-cat-tabs" id="imgCatTabs"></div>
         <label class="img-upload-cat">Upload to:
@@ -3148,6 +3191,53 @@ function closeModals() {
 }
 
 // ══════════════════════════════════════
+// Profile Links
+// ══════════════════════════════════════
+const PROFILE_LINK_DEFS = [
+  { key: 'twitter',  label: 'X / Twitter', icon: '𝕏',  bg: '#000',      placeholder: '@username' },
+  { key: 'discord',  label: 'Discord',     icon: '💬', bg: '#5865F2',   placeholder: 'username' },
+  { key: 'telegram', label: 'Telegram',    icon: '✈️', bg: '#229ED9',   placeholder: '@username' },
+  { key: 'website',  label: 'Website',     icon: '🌐', bg: '#16a34a',   placeholder: 'https://...' },
+  { key: 'github',   label: 'GitHub',      icon: '🐙', bg: '#24292e',   placeholder: 'username' },
+  { key: 'wallet',   label: 'ETH Wallet',  icon: '💎', bg: '#627EEA',   placeholder: '0x...' },
+];
+
+let profileLinks = load('dash_profile_links', {});
+
+function renderProfileLinks() {
+  const grid = document.getElementById('profileLinksGrid');
+  if (!grid) return;
+  grid.innerHTML = PROFILE_LINK_DEFS.map(def => `
+    <div class="profile-link-row">
+      <div class="profile-link-icon" style="background:${def.bg}">${def.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div class="profile-link-label">${def.label}</div>
+        <input class="profile-link-val" data-key="${def.key}"
+          value="${(profileLinks[def.key]||'').replace(/"/g,'&quot;')}"
+          placeholder="${def.placeholder}"
+          onchange="saveProfileLink('${def.key}',this.value)"
+          onblur="saveProfileLink('${def.key}',this.value)">
+      </div>
+      <button class="profile-link-copy" title="Copy" onclick="copyProfileLink('${def.key}')">⎘</button>
+    </div>
+  `).join('');
+}
+
+function saveProfileLink(key, val) {
+  profileLinks[key] = val.trim();
+  save('dash_profile_links', profileLinks);
+}
+
+function copyProfileLink(key) {
+  const val = profileLinks[key];
+  if (!val) return;
+  navigator.clipboard.writeText(val).catch(()=>{});
+  // brief flash feedback
+  const btn = document.querySelector(`.profile-link-copy[onclick*="'${key}'"]`);
+  if (btn) { btn.textContent = '✓'; setTimeout(()=>{ btn.textContent = '⎘'; }, 1200); }
+}
+
+// ══════════════════════════════════════
 // Images (IndexedDB)
 // ══════════════════════════════════════
 const IMG_CATEGORIES = [
@@ -3843,6 +3933,7 @@ switchTab(activeTab);
 renderTasks(); renderLinks(); renderContacts(); renderSocials(); renderIdeas();
 renderNoteNav(); renderNoteEditor(); renderHomeNotes(); renderHomeWeekCal();
 renderImages();
+renderProfileLinks();
 renderXPosts();
 updateCalendarTabBadge();
 pomoResume();
