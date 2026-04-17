@@ -131,7 +131,7 @@ body {
 .menu-last { font-size: 11px; color: rgba(255,255,255,0.3); text-align: right; }
 
 /* ── Main content area ── */
-.main { margin-left: 220px; min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); flex: 1; }
+.main { margin-left: 220px; min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); flex: 1; overflow-x: hidden; }
 
 /* ── Topbar ── */
 .topbar {
@@ -447,16 +447,22 @@ body {
 
 /* ── Ticker ── */
 .ticker-wrap {
-  overflow: hidden; background: #0d0d0c;
+  position: relative;        /* contains the absolute track */
+  overflow: hidden;
+  background: #0d0d0c;
   border-bottom: 1px solid rgba(255,255,255,0.07);
-  height: 34px; display: flex; align-items: center;
+  height: 34px;
+  width: 100%;               /* never wider than parent */
   user-select: none; flex-shrink: 0;
 }
 .ticker-wrap:hover .ticker-track { animation-play-state: paused; }
 .ticker-track {
-  display: flex; flex-shrink: 0;
+  position: absolute;        /* out of flow — cannot affect page width */
+  top: 0; left: 0;
+  display: flex; height: 34px;
   animation: ticker-scroll 90s linear infinite;
   will-change: transform;
+  white-space: nowrap;
 }
 @keyframes ticker-scroll {
   0%   { transform: translateX(0); }
