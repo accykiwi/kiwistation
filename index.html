@@ -477,20 +477,14 @@ body {
 .t-down { color: #f87171; font-size: 10.5px; }
 .ticker-loading { font-size: 11px; color: rgba(255,255,255,0.3); padding: 0 20px; }
 
-/* ── Home layout: priorities + tasks + notes + week cal ── */
-.home-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 260px;
-  grid-template-rows: auto auto;
-  grid-template-areas: "left right" "week right";
-  gap: 16px;
-  align-items: start;
-}
-.home-left  { grid-area: left;  min-width: 0; }
-.home-right { grid-area: right; min-width: 0; }
-.home-week  { grid-area: week;  min-width: 0; }
-@media (max-width: 960px) {
-  .home-grid { grid-template-columns: 1fr; grid-template-areas: "left" "week" "right"; }
+/* ── Home layout ── */
+.home-focus-block { margin-bottom: 14px; }
+.home-body { display: flex; gap: 14px; margin-bottom: 14px; align-items: flex-start; min-width: 0; }
+.home-tasks-col { flex: 1; min-width: 0; overflow: hidden; }
+.home-notes-col { width: 230px; flex-shrink: 0; }
+@media (max-width: 860px) {
+  .home-body { flex-direction: column; }
+  .home-notes-col { width: 100%; }
 }
 
 .home-focus-block {
@@ -527,13 +521,13 @@ body {
   letter-spacing: 0.7px; color: var(--text3); margin-bottom: 10px;
 }
 .week-days {
-  display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;
+  display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px;
 }
 .week-day {
   border: 1px solid var(--border); border-radius: var(--radius-sm);
-  padding: 8px 6px; min-height: 80px; cursor: pointer;
+  padding: 7px 5px; min-height: 74px; cursor: pointer;
   transition: all 0.12s; display: flex; flex-direction: column;
-  background: var(--surface2);
+  background: var(--surface2); overflow: hidden; min-width: 0;
 }
 .week-day:hover { border-color: var(--border-strong); background: var(--surface); }
 .week-day.is-today { border-color: var(--accent); border-top: 3px solid var(--accent); background: var(--accent-light); }
@@ -557,9 +551,8 @@ body {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
   border-top: 3px solid #16A34A;
-  position: sticky; top: 20px;
   display: flex; flex-direction: column;
-  max-height: calc(100vh - 180px); min-height: 300px;
+  min-height: 280px; overflow: hidden;
 }
 .home-notes-header {
   display: flex; align-items: center; justify-content: space-between;
@@ -1253,19 +1246,21 @@ kbd {
 
   <!-- Tasks / Home Panel -->
   <div class="panel active" id="panel-tasks">
-    <div class="home-grid">
 
-      <!-- Left col: Focus + Tasks -->
-      <div class="home-left">
-        <div class="home-focus-block">
-          <div class="home-focus-label">&#9889; Today's Focus</div>
-          <div class="home-focus-inputs">
-            <input class="home-focus-input focus-input" id="focus0" placeholder="Priority 1" oninput="saveFocus()">
-            <input class="home-focus-input focus-input" id="focus1" placeholder="Priority 2" oninput="saveFocus()">
-            <input class="home-focus-input focus-input" id="focus2" placeholder="Priority 3" oninput="saveFocus()">
-          </div>
-        </div>
-        <div class="panel-card" style="margin-bottom:0">
+    <!-- Focus priorities (full width) -->
+    <div class="home-focus-block">
+      <div class="home-focus-label">&#9889; Today's Focus</div>
+      <div class="home-focus-inputs">
+        <input class="home-focus-input focus-input" id="focus0" placeholder="Priority 1" oninput="saveFocus()">
+        <input class="home-focus-input focus-input" id="focus1" placeholder="Priority 2" oninput="saveFocus()">
+        <input class="home-focus-input focus-input" id="focus2" placeholder="Priority 3" oninput="saveFocus()">
+      </div>
+    </div>
+
+    <!-- Tasks (left) + Notes (right) -->
+    <div class="home-body">
+      <div class="home-tasks-col">
+        <div class="panel-card">
           <div class="add-row">
             <input type="text" id="taskInput" placeholder="Add a task..." onkeydown="if(event.key==='Enter')addTask()">
             <input type="date" id="taskDueInput" class="task-due-input" title="Optional due date">
@@ -1274,9 +1269,7 @@ kbd {
           <ul class="item-list" id="taskList"></ul>
         </div>
       </div>
-
-      <!-- Right col: Notes (spans both rows) -->
-      <div class="home-right">
+      <div class="home-notes-col">
         <div class="home-notes-panel">
           <div class="home-notes-header">
             <span class="home-notes-title">&#128221; Notes</span>
@@ -1288,16 +1281,14 @@ kbd {
           </div>
         </div>
       </div>
-
-      <!-- Week calendar (below tasks, left col) -->
-      <div class="home-week">
-        <div class="week-strip">
-          <div class="week-strip-title">This Week</div>
-          <div class="week-days" id="homeWeekCal"></div>
-        </div>
-      </div>
-
     </div>
+
+    <!-- Week calendar (full width below) -->
+    <div class="week-strip">
+      <div class="week-strip-title">This Week</div>
+      <div class="week-days" id="homeWeekCal"></div>
+    </div>
+
   </div>
 
   <!-- Resources Panel -->
