@@ -445,32 +445,98 @@ body {
 .calc-toggle:hover { background: var(--border-strong); }
 .calc-rate.hidden b { filter: blur(6px); }
 
-/* ── Daily Focus ── */
-.focus-bar {
-  padding: 10px 28px 10px 32px; background: #fafaf9;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 12px;
+/* ── Ticker ── */
+.ticker-wrap {
+  overflow: hidden; background: #0d0d0c;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  height: 34px; display: flex; align-items: center;
+  user-select: none; flex-shrink: 0;
+}
+.ticker-wrap:hover .ticker-track { animation-play-state: paused; }
+.ticker-track {
+  display: flex; flex-shrink: 0;
+  animation: ticker-scroll 90s linear infinite;
+  will-change: transform;
+}
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-item {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0 20px; font-size: 11.5px; font-weight: 600;
+  color: rgba(255,255,255,0.75);
+  border-right: 1px solid rgba(255,255,255,0.06);
+  white-space: nowrap; height: 34px;
+  font-variant-numeric: tabular-nums; flex-shrink: 0;
+}
+.t-dot  { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.t-label { color: rgba(255,255,255,0.35); font-size: 10px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; }
+.t-price { color: rgba(255,255,255,0.9); }
+.t-up   { color: #4ade80; font-size: 10.5px; }
+.t-down { color: #f87171; font-size: 10.5px; }
+.ticker-loading { font-size: 11px; color: rgba(255,255,255,0.3); padding: 0 20px; }
+
+/* ── Home layout: priorities + tasks + notes ── */
+.home-grid {
+  display: grid; grid-template-columns: 1fr 340px; gap: 20px;
+  align-items: flex-start;
+}
+@media (max-width: 960px) { .home-grid { grid-template-columns: 1fr; } }
+
+.home-focus-block {
+  margin-bottom: 18px; padding: 14px 16px;
+  background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius);
   border-left: 3px solid #f59e0b;
 }
-.focus-label {
+.home-focus-label {
   font-size: 10px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.6px; color: #92400e; flex-shrink: 0;
+  letter-spacing: 0.7px; color: #92400e; margin-bottom: 10px;
 }
-.focus-items { display: flex; gap: 6px; flex: 1; flex-wrap: wrap; }
-.focus-input {
-  flex: 1; min-width: 120px; padding: 5px 10px;
-  border: 1px solid var(--border); border-radius: 999px;
-  font-size: 12px; font-family: inherit; color: var(--text);
-  background: var(--surface2); outline: none;
+.home-focus-inputs { display: flex; flex-direction: column; gap: 6px; }
+.home-focus-input {
+  padding: 8px 12px; border: 1px solid #fde68a;
+  border-radius: var(--radius-sm); font-size: 13px; font-family: inherit;
+  background: rgba(255,255,255,0.7); color: var(--text); outline: none;
+  transition: all 0.15s;
 }
-.focus-input:focus { border-color: var(--accent); background: var(--surface); }
-.focus-input::placeholder { color: var(--text3); }
-.focus-input.filled { border-style: solid; }
-.focus-save-btn {
-  padding: 5px 12px; border-radius: 999px;
-  border: 1px solid var(--accent); background: var(--accent-light);
-  color: var(--accent-text); font-size: 12px; font-weight: 600;
-  cursor: pointer; font-family: inherit;
+.home-focus-input:focus { border-color: #f59e0b; background: #fff; }
+.home-focus-input::placeholder { color: #b45309; opacity: 0.5; }
+.home-focus-input.filled { font-weight: 500; color: #78350f; background: rgba(255,255,255,0.9); }
+
+/* Reuse focus-input class for compat */
+.focus-input { font-family: inherit; }
+
+.home-notes-panel {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
+  border-top: 3px solid #16A34A;
+  position: sticky; top: 20px;
+  display: flex; flex-direction: column;
+  max-height: calc(100vh - 240px); min-height: 300px;
+}
+.home-notes-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px 10px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.home-notes-title { font-size: 13px; font-weight: 700; }
+.home-note-list { padding: 6px 8px; border-bottom: 1px solid var(--border); flex-shrink: 0; max-height: 130px; overflow-y: auto; }
+.home-note-item {
+  padding: 5px 8px; border-radius: var(--radius-sm); cursor: pointer;
+  font-size: 12px; font-weight: 500; color: var(--text2); transition: background 0.1s;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.home-note-item:hover { background: var(--surface2); color: var(--text); }
+.home-note-item.active { background: #F0FDF4; color: #166534; font-weight: 600; }
+.home-note-editor { flex: 1; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+.home-note-title-inp {
+  border: none; outline: none; font-size: 14px; font-weight: 700;
+  width: 100%; font-family: inherit; color: var(--text); background: transparent;
+}
+.home-note-body-inp {
+  border: none; outline: none; resize: none; flex: 1;
+  font-size: 13px; font-family: inherit; line-height: 1.7;
+  color: var(--text); background: transparent; min-height: 120px;
 }
 
 /* ── Panels ── */
@@ -1119,57 +1185,65 @@ kbd {
     <span class="weather-loading">Loading weather...</span>
   </div>
 
-  <!-- Strips Area: Markets + NFTs + Calc -->
-  <div class="strips-area">
-    <div class="strip-row">
-      <div class="section-label">Markets <span class="updated" id="marketUpdated"></span></div>
-      <div class="market-strip" id="marketStrip"></div>
-    </div>
-    <div class="strip-row">
-      <div class="section-label">NFT Collections <span class="updated" id="nftUpdated"></span></div>
-      <div class="market-strip" id="nftStrip"></div>
-    </div>
-    <div class="strip-row" style="border-bottom:none;padding-bottom:0">
-      <div class="calc-bar">
-        <div class="calc-header">
-          <div class="calc-rate" id="calcRateWrap">1 ETH = <b id="calcRate">—</b> USDC</div>
-          <button class="calc-toggle" id="calcToggle" onclick="toggleRateHidden()">Practice mode</button>
-        </div>
-        <div class="calc-inputs">
-          <div class="calc-field">
-            <label>ETH</label>
-            <input type="number" id="calcEth" placeholder="0.0" step="0.001" oninput="calcFromEth()">
-          </div>
-          <div class="calc-arrow">&#x21C4;</div>
-          <div class="calc-field">
-            <label>USDC</label>
-            <input type="number" id="calcUsdc" placeholder="0.00" step="0.01" oninput="calcFromUsdc()">
-          </div>
-        </div>
-        <div class="calc-refs" id="calcRefs"></div>
-      </div>
+  <!-- Market Ticker -->
+  <div class="ticker-wrap">
+    <div class="ticker-track" id="tickerTrack">
+      <span class="ticker-loading">Loading market data...</span>
     </div>
   </div>
 
-  <!-- Daily Focus -->
-  <div class="focus-bar">
-    <span class="focus-label">Today's Focus</span>
-    <input class="focus-input" id="focus0" placeholder="Priority 1" oninput="saveFocus()">
-    <input class="focus-input" id="focus1" placeholder="Priority 2" oninput="saveFocus()">
-    <input class="focus-input" id="focus2" placeholder="Priority 3" oninput="saveFocus()">
+  <!-- Hidden elements kept for JS compat (calc, market/nft strip targets) -->
+  <div style="display:none">
+    <div id="marketStrip"></div>
+    <div id="nftStrip"></div>
+    <div id="marketUpdated"></div>
+    <div id="nftUpdated"></div>
+    <input id="calcEth"><input id="calcUsdc">
+    <div id="calcRate"></div><div id="calcRefs"></div>
+    <div id="calcRateWrap"></div><div id="calcToggle"></div>
   </div>
 
   <div class="panels">
 
-  <!-- Tasks Panel -->
+  <!-- Tasks / Home Panel -->
   <div class="panel active" id="panel-tasks">
-    <div class="panel-card">
-      <div class="add-row">
-        <input type="text" id="taskInput" placeholder="Add a task..." onkeydown="if(event.key==='Enter')addTask()">
-        <input type="date" id="taskDueInput" class="task-due-input" title="Optional due date">
-        <button class="btn btn-primary" onclick="addTask()">Add</button>
+    <div class="home-grid">
+
+      <!-- Left: Focus + Tasks -->
+      <div>
+        <!-- Today's Focus -->
+        <div class="home-focus-block">
+          <div class="home-focus-label">&#9889; Today's Focus</div>
+          <div class="home-focus-inputs">
+            <input class="home-focus-input focus-input" id="focus0" placeholder="Priority 1" oninput="saveFocus()">
+            <input class="home-focus-input focus-input" id="focus1" placeholder="Priority 2" oninput="saveFocus()">
+            <input class="home-focus-input focus-input" id="focus2" placeholder="Priority 3" oninput="saveFocus()">
+          </div>
+        </div>
+
+        <!-- Task add + list -->
+        <div class="panel-card">
+          <div class="add-row">
+            <input type="text" id="taskInput" placeholder="Add a task..." onkeydown="if(event.key==='Enter')addTask()">
+            <input type="date" id="taskDueInput" class="task-due-input" title="Optional due date">
+            <button class="btn btn-primary" onclick="addTask()">Add</button>
+          </div>
+          <ul class="item-list" id="taskList"></ul>
+        </div>
       </div>
-      <ul class="item-list" id="taskList"></ul>
+
+      <!-- Right: Quick Notes -->
+      <div class="home-notes-panel">
+        <div class="home-notes-header">
+          <span class="home-notes-title">&#128221; Notes</span>
+          <button class="btn btn-ghost btn-sm" onclick="homeAddNote()">+ New</button>
+        </div>
+        <div class="home-note-list" id="homeNoteList"></div>
+        <div class="home-note-editor" id="homeNoteEditor">
+          <div style="color:var(--text3);font-size:13px;padding:8px 0">Select or create a note</div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -1721,10 +1795,142 @@ function renderMarket(src) {
   }).join('');
 
   document.getElementById('marketStrip').innerHTML = coinCards + indicatorCards;
+  renderTicker();
 }
 
 function placeholderCard(c) {
   return `<div class="coin-card"><div class="coin-top"><div class="coin-badge" style="background:${c.color}">${c.sym[0]}</div><div><div class="coin-name">${c.name}</div><div class="coin-symbol">${c.sym}</div></div></div><div class="coin-price" style="color:var(--text2)">--</div><div class="coin-change">No data</div></div>`;
+}
+
+// ══════════════════════════════════════
+// Market + NFT Ticker
+// ══════════════════════════════════════
+function renderTicker() {
+  const track = document.getElementById('tickerTrack');
+  if (!track) return;
+
+  const items = [];
+
+  // ── Coins ──
+  const prices = marketCache?.prices || {};
+  for (const c of COINS) {
+    const d = prices[c.id];
+    if (!d?.usd) continue;
+    const p = c.id === 'bitcoin'
+      ? '$' + Math.round(d.usd).toLocaleString()
+      : '$' + d.usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    items.push({ label: c.sym, price: p, change: d.usd_24h_change ?? null, color: c.color });
+  }
+
+  // ── Indicators ──
+  const src = marketCache;
+  if (src?.fng?.[0]) {
+    const f = src.fng[0];
+    items.push({ label: 'F&G', price: f.value + ' ' + f.value_classification, change: null, color: '#ef4444' });
+  }
+  if (src?.global?.market_cap_percentage?.btc) {
+    const btcd = src.global.market_cap_percentage.btc;
+    const ch = src.global.market_cap_change_percentage_24h_usd ?? null;
+    items.push({ label: 'BTC.D', price: btcd.toFixed(1) + '%', change: ch, color: '#f59e0b' });
+  }
+  if (src?.global?.total_market_cap?.usd) {
+    const mcap = src.global.total_market_cap.usd;
+    const tn = mcap >= 1e12 ? '$' + (mcap/1e12).toFixed(2) + 'T' : '$' + (mcap/1e9).toFixed(0) + 'B';
+    const ch = src.global.market_cap_change_percentage_24h_usd ?? null;
+    items.push({ label: 'MCAP', price: tn, change: ch, color: '#10b981' });
+  }
+
+  // ── NFTs ──
+  const nd = nftCache?.data || {};
+  for (const nft of NFTS) {
+    const d = nd[nft.id];
+    if (!d) continue;
+    let price = null, change = null;
+    if (d.kind === 'floor' && d.floorNative != null) {
+      price = d.floorNative.toFixed(2) + ' ' + (d.nativeSymbol || 'ETH');
+      change = d.change24h ?? null;
+    } else if (d.kind === 'meta' && d.totalSupply) {
+      price = d.totalSupply.toLocaleString();
+    }
+    if (price) items.push({ label: nft.name, price, change, color: nft.color });
+  }
+
+  if (!items.length) {
+    track.innerHTML = '<span class="ticker-loading">Loading market data...</span>';
+    return;
+  }
+
+  const makeItem = ({ label, price, change, color }) => {
+    const chg = change != null
+      ? `<span class="${change >= 0 ? 't-up' : 't-down'}">${change >= 0 ? '▲' : '▼'}${Math.abs(change).toFixed(2)}%</span>`
+      : '';
+    return `<span class="ticker-item"><span class="t-dot" style="background:${color}"></span><span class="t-label">${label}</span><span class="t-price">${price}</span>${chg}</span>`;
+  };
+
+  const html = items.map(makeItem).join('');
+  track.innerHTML = html + html; // duplicate for seamless CSS scroll
+}
+
+// ══════════════════════════════════════
+// Home Panel — Quick Notes
+// ══════════════════════════════════════
+let homeActiveNoteId = null;
+
+function renderHomeNotes() {
+  const listEl = document.getElementById('homeNoteList');
+  const editorEl = document.getElementById('homeNoteEditor');
+  if (!listEl || !editorEl) return;
+
+  if (!notes.length) {
+    listEl.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:4px 8px">No notes yet</div>';
+    editorEl.innerHTML = '<div style="color:var(--text3);font-size:13px;padding:8px 0">Create a note to get started</div>';
+    return;
+  }
+
+  // Auto-select first note if none selected or selected note was deleted
+  if (!homeActiveNoteId || !notes.find(n => n.id === homeActiveNoteId)) {
+    homeActiveNoteId = notes[0].id;
+  }
+
+  listEl.innerHTML = notes.slice(0, 10).map(n =>
+    `<div class="home-note-item${n.id === homeActiveNoteId ? ' active' : ''}" onclick="homeSelectNote('${n.id}')">${esc(n.title || 'Untitled')}</div>`
+  ).join('');
+
+  const note = notes.find(n => n.id === homeActiveNoteId);
+  if (note) {
+    editorEl.innerHTML = `
+      <input class="home-note-title-inp" id="homeNoteTitleInp" value="${esc(note.title || '')}" placeholder="Note title..." oninput="homeNoteEdit()">
+      <textarea class="home-note-body-inp" id="homeNoteBodyInp" placeholder="Start writing..." oninput="homeNoteEdit()">${esc(note.body || '')}</textarea>`;
+  }
+}
+
+function homeSelectNote(id) {
+  homeActiveNoteId = id;
+  renderHomeNotes();
+  setTimeout(() => document.getElementById('homeNoteBodyInp')?.focus(), 50);
+}
+
+function homeNoteEdit() {
+  const note = notes.find(n => n.id === homeActiveNoteId);
+  if (!note) return;
+  note.title = document.getElementById('homeNoteTitleInp')?.value || '';
+  note.body  = document.getElementById('homeNoteBodyInp')?.value || '';
+  save('dash_notes', notes);
+  // Refresh title in list without re-rendering full editor
+  document.querySelectorAll('.home-note-item').forEach(el => {
+    if (el.onclick?.toString().includes(homeActiveNoteId)) el.textContent = note.title || 'Untitled';
+  });
+  renderNoteNav(); // keep the Notes tab in sync
+}
+
+function homeAddNote() {
+  const id = 'n_' + Date.now();
+  notes.unshift({ id, title: '', body: '', created: Date.now() });
+  save('dash_notes', notes);
+  homeActiveNoteId = id;
+  renderHomeNotes();
+  renderNoteNav();
+  setTimeout(() => document.getElementById('homeNoteTitleInp')?.focus(), 50);
 }
 
 // ══════════════════════════════════════
@@ -1977,6 +2183,7 @@ async function fetchNFTs() {
     save('dash_nft_cache', nftCache);
   }
   renderNFTData(nftCache?.data || {}, { cached: !anyOk, fetchedAt: nftCache?.fetchedAt });
+  renderTicker();
 }
 
 function renderNFTData(data, meta = {}) {
@@ -2502,6 +2709,7 @@ function removeIdea(i) { ideas.splice(i, 1); renderIdeas(); }
 // Notes
 // ══════════════════════════════════════
 function renderNoteNav() {
+  renderHomeNotes();
   const nav = document.getElementById('noteListNav');
   nav.innerHTML = notes.map((n, i) => {
     const title = n.title || 'Untitled';
@@ -3521,7 +3729,7 @@ setInterval(tickClocks, 1000);
 { const now = new Date(); calViewDate = { year: now.getFullYear(), month: now.getMonth() }; calSelectedDate = today(); }
 switchTab(activeTab);
 renderTasks(); renderLinks(); renderContacts(); renderSocials(); renderIdeas();
-renderNoteNav(); renderNoteEditor();
+renderNoteNav(); renderNoteEditor(); renderHomeNotes();
 renderImages();
 renderXPosts();
 updateCalendarTabBadge();
