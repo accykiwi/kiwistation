@@ -2259,9 +2259,9 @@ function applyRateHidden() {
 //   'alchemy-meta'  — Alchemy getContractMetadata (non-ETH chains: shows supply instead of floor)
 //   null            — no live source, card shows chain label only
 const NFTS = [
-  { id:'pudgy-penguins', name:'Pudgy Penguins', color:'#3498db', chain:'ETH', contract:'0xBd3531dA5CF5857e7CfAA92426877b022e612cf8' },
-  { id:'bayc',           name:'Bored Apes',     color:'#d4a843', chain:'ETH', contract:'0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D' },
-  { id:'mayc',           name:'Mutant Apes',    color:'#7cb342', chain:'ETH', contract:'0x60E4d786628Fea6478F785A6d7e704777c86a7c6' },
+  { id:'pudgy-penguins', name:'Pudgy Penguins', color:'#3498db', chain:'ETH', contract:'0xBd3531dA5CF5857e7CfAA92426877b022e612cf8', cgId:'pudgy-penguins' },
+  { id:'bayc',           name:'Bored Apes',     color:'#d4a843', chain:'ETH', contract:'0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D', cgId:'bored-ape-yacht-club' },
+  { id:'mayc',           name:'Mutant Apes',    color:'#7cb342', chain:'ETH', contract:'0x60E4d786628Fea6478F785A6d7e704777c86a7c6', cgId:'mutant-ape-yacht-club' },
   { id:'w3pb',           name:'Web3 Playboys',  color:'#7c3aed', chain:'Abstract', contract:'0x09bb4c785165915e66f4a645bc978a6c885a0319' },
   { id:'frankys',        name:"Franky's Dinner",color:'#e54d4d', chain:'ETH' }, // contract TBD
   { id:'nibbles',        name:'Nibbles',        color:'#ff9800', chain:'ETH', contract:'0x5e52d41f0e40d7cdb204db0d09659846f7404547' },
@@ -2281,65 +2281,74 @@ function renderNFTLoading() {
 }
 
 let nftCache = load('dash_nft_cache', null);
-const nftBaseline = null; // legacy — kept so renderNFTData doesn't throw
-// Clear stale/malformed cache so all NFTs re-fetch cleanly
+const nftBaseline = null; // legacy stub — keeps renderNFTData from throwing
 if (nftCache?.data) {
-  const bad = Object.values(nftCache.data).some(d => d?.kind === undefined || (d?.kind === 'floor' && d?.floorNative == null));
+  const bad = Object.values(nftCache.data).some(d => d?.kind === undefined);
   if (bad) { nftCache = null; localStorage.removeItem('dash_nft_cache'); }
 }
 
-// ── Single NFT fetch: tries Reservoir (floor + 24hr change in one call), falls back to Alchemy ──
-async function fetchOneNFT(nft) {
-  if (!nft.contract) return null;
+// CoinGecko change cache — 1h TTL, sequential fetches to avoid rate limits
+let nftCgCache = load('dash_nft_cg_cache', null);
+const NFT_CG_TTL = 60 * 60 * 1000;
 
-  // Reservoir base URL: ETH mainnet vs Abstract
-  const resBase = nft.chain === 'Abstract'
-    ? 'https://api-abstract.reservoir.tools'
-    : 'https://api.reservoir.tools';
-
-  try {
-    const j = await fetchJsonWithRetry(`${resBase}/collections/v7?contract=${nft.contract}&limit=1`, 1);
-    const col = j?.collections?.[0];
-    if (col?.floorAsk?.price?.amount?.native != null) {
-      const floor  = col.floorAsk.price.amount.native;
-      const sym    = col.floorAsk.price.currency?.symbol || 'ETH';
-      const ratio   = col.floorSaleChange?.['1day'];
-      const ratio7d = col.floorSaleChange?.['7day'];
-      const change   = ratio   != null ? ratio   * 100 : null;
-      const change7d = ratio7d != null ? ratio7d * 100 : null;
-      return { kind: 'floor', floorNative: floor, nativeSymbol: sym, change24h: change, change7d };
-    }
-  } catch {}
-
-  // Fallback: Alchemy ETH mainnet only (demo key only works on eth-mainnet)
-  if (nft.chain === 'ETH') {
-    const r = await fetch(`https://eth-mainnet.g.alchemy.com/nft/v3/demo/getFloorPrice?contractAddress=${nft.contract}`);
-    if (!r.ok) throw new Error('Alchemy HTTP ' + r.status);
-    const j = await r.json();
-    const fp = j?.openSea?.floorPrice ?? null;
-    if (fp == null) throw new Error('No floor from Alchemy');
-    return { kind: 'floor', floorNative: fp, nativeSymbol: j?.openSea?.priceCurrency || 'ETH', change24h: null };
+async function fetchNFTChanges() {
+  if (nftCgCache && (Date.now() - nftCgCache.ts) < NFT_CG_TTL) return nftCgCache.changes;
+  const changes = {};
+  for (const nft of NFTS.filter(n => n.cgId)) {
+    try {
+      const j = await fetchJsonWithRetry(`https://api.coingecko.com/api/v3/nfts/${nft.cgId}`, 1);
+      changes[nft.id] = {
+        c24: j?.floor_price_in_usd_24h_percentage_change ?? null,
+        c7d: j?.floor_price_7d_percentage_change?.native_currency ?? null,
+      };
+    } catch {}
+    await new Promise(r => setTimeout(r, 1200));
   }
-
-  return null;
+  if (Object.keys(changes).length) {
+    nftCgCache = { changes, ts: Date.now() };
+    save('dash_nft_cg_cache', nftCgCache);
+  }
+  return changes;
 }
 
 async function fetchNFTs() {
-  // Fire all NFT fetches in parallel — no sequential blocking
+  // ── Parallel: Alchemy floor prices (ETH) + Reservoir Abstract (W3PB) ──
   const nftsWithContract = NFTS.filter(n => n.contract);
-  const settled = await Promise.allSettled(nftsWithContract.map(n => fetchOneNFT(n)));
+  const floorResults = await Promise.allSettled(nftsWithContract.map(async (nft) => {
+    if (nft.chain === 'Abstract') {
+      const j = await fetchJsonWithRetry(
+        `https://api-abstract.reservoir.tools/collections/v7?contract=${nft.contract}&limit=1`, 1
+      );
+      const floor = j?.collections?.[0]?.floorAsk?.price?.amount?.native ?? null;
+      if (floor == null) throw new Error('No Abstract floor');
+      return { id: nft.id, floor, sym: 'ETH' };
+    }
+    // ETH: Alchemy demo key (confirmed working on eth-mainnet)
+    const r = await fetch(`https://eth-mainnet.g.alchemy.com/nft/v3/demo/getFloorPrice?contractAddress=${nft.contract}`);
+    if (!r.ok) throw new Error('Alchemy ' + r.status);
+    const j = await r.json();
+    const floor = j?.openSea?.floorPrice ?? null;
+    if (floor == null) throw new Error('No Alchemy floor');
+    return { id: nft.id, floor, sym: j?.openSea?.priceCurrency || 'ETH' };
+  }));
 
+  // ── Sequential: CoinGecko 24h + 7d (cached 1h) ──
+  const cgChanges = await fetchNFTChanges();
+
+  // ── Merge floors + changes ──
   const data = {};
   let anyOk = false;
-  settled.forEach((res, i) => {
-    if (res.status === 'fulfilled' && res.value?.floorNative != null) {
-      data[nftsWithContract[i].id] = res.value;
+  floorResults.forEach((res, i) => {
+    if (res.status === 'fulfilled') {
+      const { id, floor, sym } = res.value;
+      const chg = cgChanges[id] || {};
+      data[id] = { kind: 'floor', floorNative: floor, nativeSymbol: sym,
+                   change24h: chg.c24 ?? null, change7d: chg.c7d ?? null };
       anyOk = true;
     }
   });
 
   if (anyOk) {
-    // Merge so partial failures don't erase prior good data
     nftCache = { data: { ...(nftCache?.data || {}), ...data }, fetchedAt: Date.now() };
     save('dash_nft_cache', nftCache);
   }
