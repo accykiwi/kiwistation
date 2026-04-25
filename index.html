@@ -137,7 +137,7 @@ body {
 .topbar {
   position: sticky; top: 0; z-index: 40;
   background: var(--surface); border-bottom: 1px solid var(--border);
-  padding: 0 28px; height: 58px;
+  padding: 0 28px; padding-right: 272px; height: 58px;
   display: flex; align-items: center; justify-content: space-between;
 }
 .topbar-left { display: flex; flex-direction: column; }
@@ -145,23 +145,68 @@ body {
 .topbar-date { font-size: 12px; color: var(--text3); margin-top: 1px; }
 .topbar-right { display: flex; align-items: center; gap: 16px; }
 
-/* ── Pomodoro ── */
-.pomo {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 6px 10px;
+/* ── Market Widget ── */
+.mkt-widget {
+  position: fixed; top: 0; right: 0; width: 260px; z-index: 200;
+  background: #070b0e;
+  border-left: 1px solid rgba(255,255,255,0.07);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  border-bottom-left-radius: 12px;
+  font-family: 'SF Mono','Fira Code','Consolas',monospace;
+  font-size: 11.5px; max-height: 100vh; overflow-y: auto;
+  scrollbar-width: none;
 }
-.pomo-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text3); }
-.pomo-time { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text); letter-spacing: -0.5px; }
-.pomo-time.break { color: var(--success); }
-.pomo-time.warning { color: var(--danger); }
-.pomo-btn {
-  padding: 5px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border);
-  background: var(--surface); font-size: 12px; font-weight: 600; cursor: pointer;
-  color: var(--text2); transition: all 0.1s; font-family: inherit;
+.mkt-widget::-webkit-scrollbar { display: none; }
+.mkt-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 11px 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
 }
-.pomo-btn:hover { background: var(--surface2); color: var(--text); }
-.pomo-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.mkt-title {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: rgba(255,255,255,0.35);
+}
+.mkt-live {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 9px; color: rgba(255,255,255,0.2); letter-spacing: 0.05em;
+}
+.mkt-live-dot {
+  width: 5px; height: 5px; border-radius: 50%; background: #22c55e;
+  animation: mkt-pulse 2.5s ease-in-out infinite;
+}
+@keyframes mkt-pulse {
+  0%,100% { opacity: 1; } 50% { opacity: 0.25; }
+}
+.mkt-section { border-bottom: 1px solid rgba(255,255,255,0.04); }
+.mkt-section:last-child { border-bottom: none; }
+.mkt-section-lbl {
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: rgba(255,255,255,0.18);
+  padding: 5px 11px 3px;
+}
+.mkt-row {
+  display: grid; grid-template-columns: 58px 1fr 62px;
+  align-items: center; padding: 4px 11px; gap: 2px;
+  transition: background 0.1s;
+}
+.mkt-row:hover { background: rgba(255,255,255,0.025); }
+.mkt-sym {
+  font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,0.65);
+  letter-spacing: 0.06em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mkt-price {
+  font-size: 10.5px; color: rgba(255,255,255,0.88);
+  font-variant-numeric: tabular-nums; text-align: right; padding-right: 6px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mkt-chg {
+  font-size: 10px; font-weight: 700; font-variant-numeric: tabular-nums;
+  text-align: right; white-space: nowrap;
+}
+.mkt-up   { color: #22c55e; }
+.mkt-down { color: #ef4444; }
+.mkt-dim  { color: rgba(255,255,255,0.22); }
 
 /* ── Quick Capture ── */
 .capture-bar {
@@ -446,42 +491,6 @@ body {
 .calc-rate.hidden b { filter: blur(6px); }
 
 /* ── Ticker ── */
-.ticker-wrap {
-  position: relative;        /* contains the absolute track */
-  overflow: hidden;
-  background: #0d0d0c;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-  height: 34px;
-  width: 100%;               /* never wider than parent */
-  user-select: none; flex-shrink: 0;
-}
-.ticker-wrap:hover .ticker-track { animation-play-state: paused; }
-.ticker-track {
-  position: absolute;        /* out of flow — cannot affect page width */
-  top: 0; left: 0;
-  display: flex; height: 34px;
-  animation: ticker-scroll 90s linear infinite;
-  will-change: transform;
-  white-space: nowrap;
-}
-@keyframes ticker-scroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-.ticker-item {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 0 20px; font-size: 11.5px; font-weight: 600;
-  color: rgba(255,255,255,0.75);
-  border-right: 1px solid rgba(255,255,255,0.06);
-  white-space: nowrap; height: 34px;
-  font-variant-numeric: tabular-nums; flex-shrink: 0;
-}
-.t-dot  { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-.t-label { color: rgba(255,255,255,0.35); font-size: 10px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; }
-.t-price { color: rgba(255,255,255,0.9); }
-.t-up   { color: #4ade80; font-size: 10.5px; }
-.t-down { color: #f87171; font-size: 10.5px; }
-.ticker-loading { font-size: 11px; color: rgba(255,255,255,0.3); padding: 0 20px; }
 
 /* ── Home layout ── */
 .home-focus-block { margin-bottom: 14px; }
@@ -1218,6 +1227,17 @@ kbd {
   </div>
 </aside>
 
+<!-- ══ MARKET WIDGET ══ -->
+<div class="mkt-widget" id="mktWidget">
+  <div class="mkt-header">
+    <span class="mkt-title">MARKETS</span>
+    <div class="mkt-live"><div class="mkt-live-dot"></div><span id="mktAge"></span></div>
+  </div>
+  <div id="mktBody">
+    <div class="mkt-section"><div class="mkt-section-lbl">Loading…</div></div>
+  </div>
+</div>
+
 <!-- ══ MAIN ══ -->
 <main class="main">
   <!-- Topbar -->
@@ -1226,16 +1246,7 @@ kbd {
       <div class="topbar-greeting" id="greeting">Dashboard</div>
       <div class="topbar-date" id="dateDisplay"></div>
     </div>
-    <div class="topbar-right">
-      <div class="pomo">
-        <div>
-          <div class="pomo-label" id="pomoLabel">Focus</div>
-          <div class="pomo-time" id="pomoTime">25:00</div>
-        </div>
-        <button class="pomo-btn" id="pomoToggle" onclick="pomoToggle()">Start</button>
-        <button class="pomo-btn" onclick="pomoReset()">Reset</button>
-      </div>
-    </div>
+    <div class="topbar-right"></div>
   </div>
 
   <!-- Quote -->
@@ -1264,12 +1275,6 @@ kbd {
     <span class="weather-loading">Loading weather...</span>
   </div>
 
-  <!-- Market Ticker -->
-  <div class="ticker-wrap">
-    <div class="ticker-track" id="tickerTrack">
-      <span class="ticker-loading">Loading market data...</span>
-    </div>
-  </div>
 
   <!-- Hidden elements kept for JS compat (calc, market/nft strip targets) -->
   <div style="display:none">
@@ -1896,73 +1901,97 @@ function placeholderCard(c) {
 }
 
 // ══════════════════════════════════════
-// Market + NFT Ticker
+// Market Widget
 // ══════════════════════════════════════
-function renderTicker() {
-  const track = document.getElementById('tickerTrack');
-  if (!track) return;
+function renderMarketWidget() {
+  const body = document.getElementById('mktBody');
+  const ageEl = document.getElementById('mktAge');
+  if (!body) return;
 
-  const items = [];
+  const src = marketCache;
+  const nd  = nftCache?.data || {};
 
-  // ── Coins ──
-  const prices = marketCache?.prices || {};
-  for (const c of COINS) {
-    const d = prices[c.id];
-    if (!d?.usd) continue;
-    const p = c.id === 'bitcoin'
-      ? '$' + Math.round(d.usd).toLocaleString()
-      : '$' + d.usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    items.push({ label: c.sym, price: p, change: d.usd_24h_change ?? null, color: c.color });
+  // Age label
+  if (ageEl && src?.fetchedAt) {
+    const mins = Math.round((Date.now() - src.fetchedAt) / 60000);
+    ageEl.textContent = mins < 1 ? 'live' : mins + 'm ago';
   }
 
-  // ── Indicators ──
-  const src = marketCache;
+  function row(sym, price, change, dimColor) {
+    let chgHtml;
+    if (change != null) {
+      const up = change >= 0;
+      chgHtml = `<span class="mkt-chg ${up ? 'mkt-up' : 'mkt-down'}">${up ? '▲' : '▼'}${Math.abs(change).toFixed(2)}%</span>`;
+    } else {
+      chgHtml = `<span class="mkt-chg mkt-dim">—</span>`;
+    }
+    const dot = dimColor ? `<span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:${dimColor};margin-right:4px;vertical-align:middle;flex-shrink:0"></span>` : '';
+    return `<div class="mkt-row">
+      <span class="mkt-sym">${dot}${sym}</span>
+      <span class="mkt-price">${price ?? '—'}</span>
+      ${chgHtml}
+    </div>`;
+  }
+
+  // ── COINS ──
+  let coinsHtml = '';
+  const prices = src?.prices || {};
+  for (const c of COINS) {
+    const d = prices[c.id];
+    if (!d?.usd) { coinsHtml += row(c.sym, '—', null, c.color); continue; }
+    const p = c.id === 'bitcoin'
+      ? '$' + Math.round(d.usd).toLocaleString()
+      : d.usd >= 1
+        ? '$' + d.usd.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})
+        : '$' + d.usd.toPrecision(4);
+    coinsHtml += row(c.sym, p, d.usd_24h_change ?? null, c.color);
+  }
+
+  // ── INDICATORS ──
+  let indHtml = '';
   if (src?.fng?.[0]) {
     const f = src.fng[0];
-    items.push({ label: 'F&G', price: f.value + ' ' + f.value_classification, change: null, color: '#ef4444' });
+    const val = parseInt(f.value, 10);
+    const prev = src.fng?.[1] ? parseInt(src.fng[1].value, 10) : null;
+    const delta = prev != null ? val - prev : null;
+    indHtml += row('F&G', val + ' ' + f.value_classification.replace('Extreme ','E.'), delta, '#ef4444');
   }
   if (src?.global?.market_cap_percentage?.btc) {
     const btcd = src.global.market_cap_percentage.btc;
     const ch = src.global.market_cap_change_percentage_24h_usd ?? null;
-    items.push({ label: 'BTC.D', price: btcd.toFixed(1) + '%', change: ch, color: '#f59e0b' });
+    indHtml += row('BTC.D', btcd.toFixed(1) + '%', ch, '#f59e0b');
   }
   if (src?.global?.total_market_cap?.usd) {
     const mcap = src.global.total_market_cap.usd;
-    const tn = mcap >= 1e12 ? '$' + (mcap/1e12).toFixed(2) + 'T' : '$' + (mcap/1e9).toFixed(0) + 'B';
+    const tn = mcap >= 1e12 ? '$' + (mcap/1e12).toFixed(2) + 'T' : '$' + (mcap/1e9).toFixed(1) + 'B';
     const ch = src.global.market_cap_change_percentage_24h_usd ?? null;
-    items.push({ label: 'MCAP', price: tn, change: ch, color: '#10b981' });
+    indHtml += row('MCAP', tn, ch, '#10b981');
   }
 
   // ── NFTs ──
-  const nd = nftCache?.data || {};
+  let nftHtml = '';
+  const SHORT = { 'Pudgy Penguins':'PUDGY','Bored Apes':'BAYC','Mutant Apes':'MAYC','Web3 Playboys':'W3PB',"Franky's Dinner":'FRANKYS','Nibbles':'NIBBLES' };
   for (const nft of NFTS) {
     const d = nd[nft.id];
-    if (!d) continue;
-    let price = null, change = null;
+    const sym = SHORT[nft.name] || nft.name.toUpperCase().slice(0,7);
+    if (!d) { nftHtml += row(sym, '—', null, nft.color); continue; }
     if (d.kind === 'floor' && d.floorNative != null) {
-      price = d.floorNative.toFixed(2) + ' ' + (d.nativeSymbol || 'ETH');
-      change = d.change24h ?? null;
-    } else if (d.kind === 'meta' && d.totalSupply) {
-      price = d.totalSupply.toLocaleString();
+      const fp = d.floorNative.toFixed(3) + ' ' + (d.nativeSymbol || 'ETH');
+      nftHtml += row(sym, fp, d.change24h ?? null, nft.color);
+    } else {
+      nftHtml += row(sym, '—', null, nft.color);
     }
-    if (price) items.push({ label: nft.name, price, change, color: nft.color });
   }
 
-  if (!items.length) {
-    track.innerHTML = '<span class="ticker-loading">Loading market data...</span>';
-    return;
-  }
-
-  const makeItem = ({ label, price, change, color }) => {
-    const chg = change != null
-      ? `<span class="${change >= 0 ? 't-up' : 't-down'}">${change >= 0 ? '▲' : '▼'}${Math.abs(change).toFixed(2)}%</span>`
-      : '';
-    return `<span class="ticker-item"><span class="t-dot" style="background:${color}"></span><span class="t-label">${label}</span><span class="t-price">${price}</span>${chg}</span>`;
-  };
-
-  const html = items.map(makeItem).join('');
-  track.innerHTML = html + html; // duplicate for seamless CSS scroll
+  body.innerHTML = `
+    <div class="mkt-section"><div class="mkt-section-lbl">Coins</div>${coinsHtml}</div>
+    <div class="mkt-section"><div class="mkt-section-lbl">Market</div>${indHtml}</div>
+    <div class="mkt-section"><div class="mkt-section-lbl">NFTs</div>${nftHtml}</div>
+  `;
 }
+
+// Backwards compat shim — old call sites used renderTicker()
+function renderTicker() { renderMarketWidget(); }
 
 // ══════════════════════════════════════
 // Home Panel — Quick Notes
@@ -2226,7 +2255,7 @@ const NFTS = [
   { id:'pudgy-penguins', name:'Pudgy Penguins', color:'#3498db', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0xBd3531dA5CF5857e7CfAA92426877b022e612cf8', cgId:'pudgy-penguins' },
   { id:'bayc', name:'Bored Apes',    color:'#d4a843', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D', cgId:'bored-ape-yacht-club' },
   { id:'mayc', name:'Mutant Apes',   color:'#7cb342', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0x60E4d786628Fea6478F785A6d7e704777c86a7c6', cgId:'mutant-ape-yacht-club' },
-  { id:'w3pb', name:'Web3 Playboys', color:'#7c3aed', chain:'Abstract', source:'alchemy-meta', alchemyChain:'abstract-mainnet', contract:'0x09bb4c785165915e66f4a645bc978a6c885a0319' },
+  { id:'w3pb', name:'Web3 Playboys', color:'#7c3aed', chain:'Abstract', source:'alchemy-floor', alchemyChain:'abstract-mainnet', contract:'0x09bb4c785165915e66f4a645bc978a6c885a0319' },
   { id:'frankys', name:"Franky's Dinner", color:'#e54d4d', chain:'ETH', source:null },
   { id:'nibbles', name:'Nibbles',    color:'#ff9800', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0x5e52d41f0e40d7cdb204db0d09659846f7404547' },
 ];
@@ -2267,12 +2296,21 @@ async function fetchNFTChanges() {
   if (nftCgCache && (Date.now() - nftCgCache.ts) < NFT_CG_TTL) return nftCgCache.changes;
 
   const changes = {};
-  for (const nft of NFTS.filter(n => n.cgId)) {
+  // Use Reservoir API for ETH mainnet NFTs — no API key needed, covers all collections
+  const ethNFTs = NFTS.filter(n => n.contract && n.alchemyChain === 'eth-mainnet');
+  for (const nft of ethNFTs) {
     try {
-      const j = await fetchJsonWithRetry(`https://api.coingecko.com/api/v3/nfts/${nft.cgId}`, 1);
-      changes[nft.id] = j?.floor_price_in_usd_24h_percentage_change ?? null;
+      const j = await fetchJsonWithRetry(
+        `https://api.reservoir.tools/collections/v7?contract=${nft.contract}&limit=1`, 1
+      );
+      const col = j?.collections?.[0];
+      if (col) {
+        // floorSaleChange["1day"] is a ratio (e.g. -0.05 = -5%)
+        const ratio = col.floorSaleChange?.['1day'];
+        if (ratio != null) changes[nft.id] = ratio * 100;
+      }
     } catch {}
-    await new Promise(r => setTimeout(r, 1200)); // 1.2s between CG NFT calls
+    await new Promise(r => setTimeout(r, 400));
   }
 
   if (Object.keys(changes).length) {
@@ -2385,77 +2423,6 @@ function renderNFTData(data, meta = {}) {
   document.getElementById('nftUpdated').textContent = (meta.cached ? 'Cached ' : 'Updated ') + stamp;
 }
 
-// ══════════════════════════════════════
-// Pomodoro Timer
-// ══════════════════════════════════════
-let pomoState = load('dash_pomo', { running: false, seconds: 1500, isBreak: false, startedAt: null });
-let pomoInterval = null;
-
-function pomoRender() {
-  const m = Math.floor(pomoState.seconds / 60);
-  const s = pomoState.seconds % 60;
-  const el = document.getElementById('pomoTime');
-  el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-  el.className = 'pomo-time' + (pomoState.isBreak ? ' break' : '') + (pomoState.seconds <= 60 && pomoState.seconds > 0 && pomoState.running ? ' warning' : '');
-  document.getElementById('pomoLabel').textContent = pomoState.isBreak ? 'Break' : 'Focus';
-  document.getElementById('pomoToggle').textContent = pomoState.running ? 'Pause' : 'Start';
-  document.getElementById('pomoToggle').className = 'pomo-btn' + (pomoState.running ? ' active' : '');
-}
-
-function pomoTick() {
-  if (pomoState.seconds <= 0) {
-    pomoBeep();
-    if (pomoState.isBreak) {
-      pomoState.isBreak = false; pomoState.seconds = 1500;
-    } else {
-      pomoState.isBreak = true; pomoState.seconds = 300;
-    }
-    save('dash_pomo', pomoState);
-    pomoRender();
-    return;
-  }
-  pomoState.seconds--;
-  pomoRender();
-}
-
-function pomoToggle() {
-  pomoState.running = !pomoState.running;
-  if (pomoState.running) {
-    pomoInterval = setInterval(pomoTick, 1000);
-  } else {
-    clearInterval(pomoInterval);
-  }
-  save('dash_pomo', pomoState);
-  pomoRender();
-}
-
-function pomoReset() {
-  clearInterval(pomoInterval);
-  pomoState = { running: false, seconds: 1500, isBreak: false };
-  save('dash_pomo', pomoState);
-  pomoRender();
-}
-
-function pomoBeep() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [0, 0.2, 0.4].forEach(delay => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = 880;
-      gain.gain.setValueAtTime(0.3, ctx.currentTime + delay);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + delay + 0.15);
-      osc.start(ctx.currentTime + delay);
-      osc.stop(ctx.currentTime + delay + 0.15);
-    });
-  } catch {}
-}
-
-function pomoResume() {
-  pomoRender();
-  if (pomoState.running) pomoInterval = setInterval(pomoTick, 1000);
-}
 
 // ══════════════════════════════════════
 // Daily Focus
@@ -3936,15 +3903,22 @@ renderImages();
 renderProfileLinks();
 renderXPosts();
 updateCalendarTabBadge();
-pomoResume();
+renderMarketWidget();
 initImgDrop();
 updateReviewMenu();
 checkReviewsOnLoad();
 checkTodayEvents();
 
-setInterval(fetchMarket, 180000); // 3 min — 3 endpoints per cycle
-setInterval(fetchNFTs, 600000);   // 10 min — rate-limit friendly
+setInterval(fetchMarket, 180000);   // 3 min — 3 endpoints per cycle
+setInterval(fetchNFTs, 600000);    // 10 min — rate-limit friendly
 setInterval(fetchWeather, 1800000);
+setInterval(() => { // refresh widget age display every minute
+  const ageEl = document.getElementById('mktAge');
+  if (ageEl && marketCache?.fetchedAt) {
+    const mins = Math.round((Date.now() - marketCache.fetchedAt) / 60000);
+    ageEl.textContent = mins < 1 ? 'live' : mins + 'm ago';
+  }
+}, 60000);
 </script>
 </body>
 </html>
