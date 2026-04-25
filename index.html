@@ -137,7 +137,7 @@ body {
 .topbar {
   position: sticky; top: 0; z-index: 40;
   background: var(--surface); border-bottom: 1px solid var(--border);
-  padding: 0 28px; padding-right: 272px; height: 58px;
+  padding: 0 28px; padding-right: 592px; height: 58px;
   display: flex; align-items: center; justify-content: space-between;
 }
 .topbar-left { display: flex; flex-direction: column; }
@@ -147,19 +147,16 @@ body {
 
 /* ── Market Widget ── */
 .mkt-widget {
-  position: fixed; top: 0; right: 0; width: 260px; z-index: 200;
+  position: fixed; top: 0; right: 0; width: 580px; z-index: 200;
   background: #070b0e;
   border-left: 1px solid rgba(255,255,255,0.07);
   border-bottom: 1px solid rgba(255,255,255,0.07);
   border-bottom-left-radius: 12px;
   font-family: 'SF Mono','Fira Code','Consolas',monospace;
-  font-size: 11.5px; max-height: 100vh; overflow-y: auto;
-  scrollbar-width: none;
 }
-.mkt-widget::-webkit-scrollbar { display: none; }
 .mkt-header {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 7px 11px 6px;
+  padding: 6px 12px 5px;
   border-bottom: 1px solid rgba(255,255,255,0.06);
   background: rgba(255,255,255,0.02);
 }
@@ -175,33 +172,38 @@ body {
   width: 5px; height: 5px; border-radius: 50%; background: #22c55e;
   animation: mkt-pulse 2.5s ease-in-out infinite;
 }
-@keyframes mkt-pulse {
-  0%,100% { opacity: 1; } 50% { opacity: 0.25; }
+@keyframes mkt-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+/* 3-column grid body */
+.mkt-body {
+  display: grid; grid-template-columns: 1fr 1fr 1.5fr; align-items: start;
 }
-.mkt-section { border-bottom: 1px solid rgba(255,255,255,0.04); }
-.mkt-section:last-child { border-bottom: none; }
+.mkt-section {
+  border-right: 1px solid rgba(255,255,255,0.04);
+  padding-bottom: 6px;
+}
+.mkt-section:last-child { border-right: none; }
 .mkt-section-lbl {
-  font-size: 8.5px; font-weight: 700; letter-spacing: 0.14em;
+  font-size: 8px; font-weight: 700; letter-spacing: 0.14em;
   text-transform: uppercase; color: rgba(255,255,255,0.18);
-  padding: 5px 11px 3px;
+  padding: 5px 10px 3px;
 }
 .mkt-row {
-  display: grid; grid-template-columns: 58px 1fr 62px;
-  align-items: center; padding: 4px 11px; gap: 2px;
+  display: grid; grid-template-columns: 52px 1fr 58px;
+  align-items: center; padding: 3px 10px; gap: 2px;
   transition: background 0.1s;
 }
 .mkt-row:hover { background: rgba(255,255,255,0.025); }
 .mkt-sym {
-  font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,0.65);
-  letter-spacing: 0.06em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.65);
+  letter-spacing: 0.06em; white-space: nowrap;
 }
 .mkt-price {
-  font-size: 10.5px; color: rgba(255,255,255,0.88);
-  font-variant-numeric: tabular-nums; text-align: right; padding-right: 6px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: 10px; color: rgba(255,255,255,0.88);
+  font-variant-numeric: tabular-nums; text-align: right; padding-right: 5px;
+  white-space: nowrap;
 }
 .mkt-chg {
-  font-size: 10px; font-weight: 700; font-variant-numeric: tabular-nums;
+  font-size: 9.5px; font-weight: 700; font-variant-numeric: tabular-nums;
   text-align: right; white-space: nowrap;
 }
 .mkt-up   { color: #22c55e; }
@@ -1233,7 +1235,7 @@ kbd {
     <span class="mkt-title">MARKETS</span>
     <div class="mkt-live"><div class="mkt-live-dot"></div><span id="mktAge"></span></div>
   </div>
-  <div id="mktBody">
+  <div id="mktBody" class="mkt-body">
     <div class="mkt-section"><div class="mkt-section-lbl">Loading…</div></div>
   </div>
 </div>
@@ -2252,12 +2254,12 @@ function applyRateHidden() {
 //   'alchemy-meta'  — Alchemy getContractMetadata (non-ETH chains: shows supply instead of floor)
 //   null            — no live source, card shows chain label only
 const NFTS = [
-  { id:'pudgy-penguins', name:'Pudgy Penguins', color:'#3498db', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0xBd3531dA5CF5857e7CfAA92426877b022e612cf8', cgId:'pudgy-penguins' },
-  { id:'bayc', name:'Bored Apes',    color:'#d4a843', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D', cgId:'bored-ape-yacht-club' },
-  { id:'mayc', name:'Mutant Apes',   color:'#7cb342', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0x60E4d786628Fea6478F785A6d7e704777c86a7c6', cgId:'mutant-ape-yacht-club' },
-  { id:'w3pb', name:'Web3 Playboys', color:'#7c3aed', chain:'Abstract', source:'alchemy-floor', alchemyChain:'abstract-mainnet', contract:'0x09bb4c785165915e66f4a645bc978a6c885a0319' },
-  { id:'frankys', name:"Franky's Dinner", color:'#e54d4d', chain:'ETH', source:null },
-  { id:'nibbles', name:'Nibbles',    color:'#ff9800', chain:'ETH', source:'alchemy-floor', alchemyChain:'eth-mainnet', contract:'0x5e52d41f0e40d7cdb204db0d09659846f7404547' },
+  { id:'pudgy-penguins', name:'Pudgy Penguins', color:'#3498db', chain:'ETH', contract:'0xBd3531dA5CF5857e7CfAA92426877b022e612cf8' },
+  { id:'bayc',           name:'Bored Apes',     color:'#d4a843', chain:'ETH', contract:'0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D' },
+  { id:'mayc',           name:'Mutant Apes',    color:'#7cb342', chain:'ETH', contract:'0x60E4d786628Fea6478F785A6d7e704777c86a7c6' },
+  { id:'w3pb',           name:'Web3 Playboys',  color:'#7c3aed', chain:'Abstract', contract:'0x09bb4c785165915e66f4a645bc978a6c885a0319' },
+  { id:'frankys',        name:"Franky's Dinner",color:'#e54d4d', chain:'ETH' }, // contract TBD
+  { id:'nibbles',        name:'Nibbles',        color:'#ff9800', chain:'ETH', contract:'0x5e52d41f0e40d7cdb204db0d09659846f7404547' },
 ];
 
 function renderNFTLoading() {
@@ -2274,103 +2276,63 @@ function renderNFTLoading() {
 }
 
 let nftCache = load('dash_nft_cache', null);
-// Migrate: old cache stored raw CoinGecko JSON; new cache stores normalized { kind, ... }
+const nftBaseline = null; // legacy — kept so renderNFTData doesn't throw
+// Clear stale/malformed cache so all NFTs re-fetch cleanly
 if (nftCache?.data) {
-  const sample = Object.values(nftCache.data)[0];
-  if (sample && sample.kind === undefined) {
-    nftCache = null;
-    localStorage.removeItem('dash_nft_cache');
-  }
+  const bad = Object.values(nftCache.data).some(d => d?.kind === undefined || (d?.kind === 'floor' && d?.floorNative == null));
+  if (bad) { nftCache = null; localStorage.removeItem('dash_nft_cache'); }
 }
 
-// 24hr baseline — stores floor prices from ~24h ago so we can show % change
-let nftBaseline = load('dash_nft_baseline', null);
-const NFT_BASELINE_TTL = 20 * 60 * 60 * 1000; // rotate baseline every ~20 hours
+// ── Single NFT fetch: tries Reservoir (floor + 24hr change in one call), falls back to Alchemy ──
+async function fetchOneNFT(nft) {
+  if (!nft.contract) return null;
 
-// CoinGecko NFT 24hr change data — cached separately (1h TTL) to avoid rate-limits
-let nftCgCache = load('dash_nft_cg_cache', null);
-const NFT_CG_TTL = 60 * 60 * 1000; // 1 hour
+  // Reservoir base URL: ETH mainnet vs Abstract
+  const resBase = nft.chain === 'Abstract'
+    ? 'https://api-abstract.reservoir.tools'
+    : 'https://api.reservoir.tools';
 
-async function fetchNFTChanges() {
-  // Return cached data if still fresh
-  if (nftCgCache && (Date.now() - nftCgCache.ts) < NFT_CG_TTL) return nftCgCache.changes;
+  try {
+    const j = await fetchJsonWithRetry(`${resBase}/collections/v7?contract=${nft.contract}&limit=1`, 1);
+    const col = j?.collections?.[0];
+    if (col?.floorAsk?.price?.amount?.native != null) {
+      const floor  = col.floorAsk.price.amount.native;
+      const sym    = col.floorAsk.price.currency?.symbol || 'ETH';
+      const ratio  = col.floorSaleChange?.['1day'];
+      const change = ratio != null ? ratio * 100 : null;
+      return { kind: 'floor', floorNative: floor, nativeSymbol: sym, change24h: change };
+    }
+  } catch {}
 
-  const changes = {};
-  // Use Reservoir API for ETH mainnet NFTs — no API key needed, covers all collections
-  const ethNFTs = NFTS.filter(n => n.contract && n.alchemyChain === 'eth-mainnet');
-  for (const nft of ethNFTs) {
-    try {
-      const j = await fetchJsonWithRetry(
-        `https://api.reservoir.tools/collections/v7?contract=${nft.contract}&limit=1`, 1
-      );
-      const col = j?.collections?.[0];
-      if (col) {
-        // floorSaleChange["1day"] is a ratio (e.g. -0.05 = -5%)
-        const ratio = col.floorSaleChange?.['1day'];
-        if (ratio != null) changes[nft.id] = ratio * 100;
-      }
-    } catch {}
-    await new Promise(r => setTimeout(r, 400));
-  }
-
-  if (Object.keys(changes).length) {
-    nftCgCache = { changes, ts: Date.now() };
-    save('dash_nft_cg_cache', nftCgCache);
-  }
-  return changes;
-}
-
-async function fetchOneNFT(nft, cgChange = null) {
-  if (nft.source === 'alchemy-floor') {
-    const r = await fetch(`https://${nft.alchemyChain}.g.alchemy.com/nft/v3/demo/getFloorPrice?contractAddress=${nft.contract}`);
-    if (!r.ok) throw new Error('HTTP ' + r.status);
+  // Fallback: Alchemy ETH mainnet only (demo key only works on eth-mainnet)
+  if (nft.chain === 'ETH') {
+    const r = await fetch(`https://eth-mainnet.g.alchemy.com/nft/v3/demo/getFloorPrice?contractAddress=${nft.contract}`);
+    if (!r.ok) throw new Error('Alchemy HTTP ' + r.status);
     const j = await r.json();
     const fp = j?.openSea?.floorPrice ?? null;
-    return { kind: 'floor', floorNative: fp, nativeSymbol: j?.openSea?.priceCurrency || 'ETH', change24h: cgChange };
+    if (fp == null) throw new Error('No floor from Alchemy');
+    return { kind: 'floor', floorNative: fp, nativeSymbol: j?.openSea?.priceCurrency || 'ETH', change24h: null };
   }
-  if (nft.source === 'alchemy-meta') {
-    const r = await fetch(`https://${nft.alchemyChain}.g.alchemy.com/nft/v3/demo/getContractMetadata?contractAddress=${nft.contract}`);
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const j = await r.json();
-    return {
-      kind: 'meta',
-      totalSupply: j?.totalSupply ? parseInt(j.totalSupply, 10) : null,
-      collName: j?.name || null
-    };
-  }
+
   return null;
 }
 
 async function fetchNFTs() {
-  // Step 1: fetch CG 24hr changes sequentially (cached 1h, won't re-hit CG until stale)
-  const cgChanges = await fetchNFTChanges();
+  // Fire all NFT fetches in parallel — no sequential blocking
+  const nftsWithContract = NFTS.filter(n => n.contract);
+  const settled = await Promise.allSettled(nftsWithContract.map(n => fetchOneNFT(n)));
 
-  // Step 2: fetch Alchemy floor prices sequentially
   const data = {};
   let anyOk = false;
-  for (const nft of NFTS.filter(n => n.source)) {
-    try {
-      const result = await fetchOneNFT(nft, cgChanges[nft.id] ?? null);
-      if (result) { data[nft.id] = result; anyOk = true; }
-    } catch {}
-    // Spacing between calls to avoid upstream rate limits
-    await new Promise(r => setTimeout(r, 600));
-  }
-  if (anyOk) {
-    // Rotate 24h baseline: if no baseline, or baseline is older than TTL, snapshot current
-    const now = Date.now();
-    if (!nftBaseline || (now - nftBaseline.ts) > NFT_BASELINE_TTL) {
-      const floors = {};
-      const merged = { ...(nftCache?.data || {}), ...data };
-      for (const [id, d] of Object.entries(merged)) {
-        if (d?.kind === 'floor' && d.floorNative != null) floors[id] = d.floorNative;
-      }
-      if (Object.keys(floors).length) {
-        nftBaseline = { floors, ts: now };
-        save('dash_nft_baseline', nftBaseline);
-      }
+  settled.forEach((res, i) => {
+    if (res.status === 'fulfilled' && res.value?.floorNative != null) {
+      data[nftsWithContract[i].id] = res.value;
+      anyOk = true;
     }
-    // Merge with existing cache so a partial failure doesn't lose prior values
+  });
+
+  if (anyOk) {
+    // Merge so partial failures don't erase prior good data
     nftCache = { data: { ...(nftCache?.data || {}), ...data }, fetchedAt: Date.now() };
     save('dash_nft_cache', nftCache);
   }
@@ -2406,8 +2368,8 @@ function renderNFTData(data, meta = {}) {
     } else if (d?.kind === 'meta') {
       price = d.totalSupply != null ? d.totalSupply.toLocaleString() : '\u2014';
       changeStr = n.chain + ' • supply';
-    } else if (!n.source) {
-      changeStr = n.chain + ' • manual';
+    } else if (!n.contract) {
+      changeStr = n.chain + ' • no source';
     }
 
     return `<div class="coin-card">
