@@ -521,6 +521,7 @@
       <div class="card-label">Log New Entry</div>
       <div class="log-form">
         <div class="log-form-row">
+          <input id="log-date" type="date">
           <select id="log-type">
             <option value="project_update">Project Update</option>
             <option value="content">Content</option>
@@ -530,14 +531,14 @@
             <option value="tool">Tool Built</option>
             <option value="personal">Personal</option>
           </select>
+        </div>
+        <div class="log-form-row">
           <input id="log-project" type="text" placeholder="Project (optional)">
         </div>
         <textarea id="log-note" rows="5" placeholder="What happened? What was decided?"></textarea>
         <button class="log-btn" onclick="addLogEntry()">LOG IT</button>
       </div>
-      <div class="note" style="margin-top:12px">
-        Entries here are stored in memory_log. In Claude Code, these automatically update kiwi-brain.json.
-      </div>
+      <div id="log-status" style="margin-top:12px;font-size:11px;color:var(--muted)"></div>
     </div>
 
   </div>
@@ -710,7 +711,11 @@ function renderProjects() {
 
 function renderLog() {
   const list = document.getElementById('log-list');
-  const entries = [...localLog].reverse().slice(0, 12);
+  if (!brain || !brain.memory_log) {
+    list.innerHTML = '<div style="color:var(--muted);font-size:11px;padding:12px 0">No entries yet.</div>';
+    return;
+  }
+  const entries = [...brain.memory_log].reverse().slice(0, 12);
   if (!entries.length) {
     list.innerHTML = '<div style="color:var(--muted);font-size:11px;padding:12px 0">No entries yet.</div>';
     return;
@@ -722,39 +727,86 @@ function renderLog() {
         <span class="log-type type-${e.type || 'personal'}">${(e.type||'note').replace('_',' ')}</span>
         ${e.project ? `<span class="log-project">${e.project}</span>` : ''}
       </div>
-      <div class="log-text">${e.note}</div>
+      <div class="log-text">${e.note.slice(0,100)}</div>
     </div>
   `).join('');
 }
 
-function addLogEntry() {
-  const type = document.getElementById('log-type').value;
-  const project = document.getElementById('log-project').value.trim();
-  const note = document.getElementById('log-note').value.trim();
-  if (!note) return;
+async function addLogEntry() {
+  const dateEl = document.getElementById('log-date');
+  const typeEl = document.getElementById('log-type');
+  const projectEl = document.getElementById('log-project');
+  const noteEl = document.getElementById('log-note');
+  const statusEl = document.getElementById('log-status');
+  const btnEl = document.querySelector('.log-btn');
 
-  const today = new Date().toISOString().split('T')[0];
-  const entry = { date: today, type };
+  const date = dateEl.value || new Date().toISOString().split('T')[0];
+  const type = typeEl.value;
+  const project = projectEl.value.trim();
+  const note = noteEl.value.trim();
+
+  if (!note) {
+    statusEl.textContent = 'Please enter a note.';
+    statusEl.style.color = 'var(--pink)';
+    return;
+  }
+
+  const entry = { date, type, note };
   if (project) entry.project = project;
-  entry.note = note;
 
-  localLog.push(entry);
-  renderLog();
+  try {
+    btnEl.textContent = 'Saving...';
+    btnEl.disabled = true;
 
-  document.getElementById('log-note').value = '';
-  document.getElementById('log-project').value = '';
+    const res = await fetch('/api/memory', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry)
+    });
 
-  // Visual feedback
-  const btn = document.querySelector('.log-btn');
-  btn.textContent = 'LOGGED ✓';
-  btn.style.background = 'var(--green)';
-  setTimeout(() => {
-    btn.textContent = 'LOG IT';
-    btn.style.background = 'var(--pink)';
-  }, 1500);
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Save failed');
+    }
+
+    // Reload brain to show new entry
+    const brainRes = await fetch('/api/brain');
+    brain = await brainRes.json();
+    renderLog();
+
+    // Clear form
+    noteEl.value = '';
+    projectEl.value = '';
+    dateEl.value = new Date().toISOString().split('T')[0];
+
+    // Visual feedback
+    statusEl.textContent = '✓ Saved to memory';
+    statusEl.style.color = 'var(--green)';
+    btnEl.textContent = 'LOG IT';
+    btnEl.disabled = false;
+
+    setTimeout(() => {
+      statusEl.textContent = '';
+    }, 2000);
+  } catch (e) {
+    statusEl.textContent = '✗ Error: ' + e.message;
+    statusEl.style.color = 'var(--pink)';
+    btnEl.textContent = 'LOG IT';
+    btnEl.disabled = false;
+  }
 }
 
-loadBrain();
+function initUI() {
+  // Set date input to today
+  const today = new Date().toISOString().split('T')[0];
+  const dateInput = document.getElementById('log-date');
+  if (dateInput) dateInput.value = today;
+}
+
+loadBrain().then(() => {
+  renderLog();
+  initUI();
+});
 </script>
 </body>
 </html>
