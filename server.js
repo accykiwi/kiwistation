@@ -2,10 +2,17 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
+const { execSync } = require('child_process');
 
-const PORT = process.env.PORT || 8889;
+const PORT = process.env.PORT || 8890;
 const rootDir = __dirname;
 const brainPath = path.join(rootDir, 'kiwi-brain.json');
+const uploadsDir = path.join(rootDir, 'uploads');
+
+// Ensure uploads directory exists
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 const mimeTypes = {
   '.html': 'text/html',
@@ -117,6 +124,98 @@ const server = http.createServer((req, res) => {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'Failed to write brain' }));
         }
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.message }));
+      }
+    });
+    return;
+  }
+
+  // API: Get uploaded files list
+  if (pathname === '/api/files' && req.method === 'GET') {
+    try {
+      const files = fs.readdirSync(uploadsDir).map(f => `uploads/${f}`);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(files));
+    } catch (e) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  // API: Upload files
+  if (pathname === '/api/upload' && req.method === 'POST') {
+    const boundary = req.headers['content-type'].split('boundary=')[1];
+    if (!boundary) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'No boundary' }));
+      return;
+    }
+
+    let body = '';
+    req.on('data', chunk => { body += chunk.toString('binary'); });
+    req.on('end', () => {
+      try {
+        const parts = body.split('--' + boundary);
+        const uploadedFiles = [];
+
+        for (const part of parts) {
+          if (part.includes('filename=')) {
+            const filenameMatch = part.match(/filename="([^"]*)"/);
+            if (!filenameMatch) continue;
+            const filename = filenameMatch[1];
+
+            const fileDataStart = part.indexOf('\r\n\r\n') + 4;
+            const fileDataEnd = part.lastIndexOf('\r\n');
+            const fileData = Buffer.from(part.substring(fileDataStart, fileDataEnd), 'binary');
+
+            const safeName = `${Date.now()}-${filename.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+            const filePath = path.join(uploadsDir, safeName);
+            fs.writeFileSync(filePath, fileData);
+            uploadedFiles.push(`uploads/${safeName}`);
+            console.log(`✓ Uploaded: ${safeName}`);
+          }
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          success: true,
+          files: fs.readdirSync(uploadsDir).map(f => `uploads/${f}`)
+        }));
+      } catch (e) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.message }));
+      }
+    });
+    return;
+  }
+
+  // API: Delete file
+  if (pathname === '/api/upload' && req.method === 'DELETE') {
+    getBody(req, (body) => {
+      try {
+        const { file } = JSON.parse(body);
+        const filename = path.basename(file);
+        const filePath = path.join(uploadsDir, filename);
+
+        if (!filePath.startsWith(uploadsDir)) {
+          res.writeHead(403, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Invalid path' }));
+          return;
+        }
+
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+          console.log(`✓ Deleted: ${filename}`);
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          success: true,
+          files: fs.readdirSync(uploadsDir).map(f => `uploads/${f}`)
+        }));
       } catch (e) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: e.message }));

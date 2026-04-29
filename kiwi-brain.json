@@ -5,7 +5,6 @@
     "last_updated": "2026-04-28",
     "description": "Kiwi's persistent memory for Claude Code. Always read this at session start. Always append to memory_log when decisions are made."
   },
-
   "profile": {
     "name": "Kiwi",
     "handle": "@accykiwi",
@@ -14,12 +13,14 @@
     "runway_months": 6,
     "runway_start": "2026-04-01",
     "location": "England (targeting £500k house purchase)",
-    "ecosystem": ["Abstract", "Ethereum Mainnet"],
+    "ecosystem": [
+      "Abstract",
+      "Ethereum Mainnet"
+    ],
     "approach": "Chain-agnostic",
     "brand_mode": "Industry reputation builder, not full influencer",
     "x_followers": 1000
   },
-
   "goals": {
     "income_target_monthly": 3000,
     "income_currency": "USD",
@@ -40,7 +41,6 @@
     },
     "passive_income_notes": "Staking + savings ~£160-220/mo currently. Real play is token allocations from BD deals and Cheese merch rev share. Negotiate 5-10% cut of merch revenue before launch."
   },
-
   "projects": {
     "web3_playboys": {
       "name": "Web3 Playboys",
@@ -54,7 +54,12 @@
           "status": "Active — character rotation v01 done (06/01/26)",
           "artist": "Sloppy",
           "character_notes": "Gray rat, pink ears/tail, yellow buck teeth, big eyes. 5-angle rotation sheet completed.",
-          "giphy_tags_required": ["#w3p", "#zerotohero", "#z2h", "#zth"],
+          "giphy_tags_required": [
+            "#w3p",
+            "#zerotohero",
+            "#z2h",
+            "#zth"
+          ],
           "traits_pool_party": "Working set — Succession float, Graduate staring, Breaking Bad pink bear, The Graduate, frame-by-frame animation"
         },
         "cheese_merch": {
@@ -63,7 +68,11 @@
           "box_dimensions": "H15cm × W11cm × D13cm",
           "fit_issue": "Plush is 0.5cm too tall. Options: request 16cm box, compress (risky), reduce plush to 14.5cm",
           "dieline_status": "Requested from vendor",
-          "vendor_shortlist": ["Extreme Screen Prints", "Scrappy Apparel", "Streetwear House"],
+          "vendor_shortlist": [
+            "Extreme Screen Prints",
+            "Scrappy Apparel",
+            "Streetwear House"
+          ],
           "blank_selected": "Bella+Canvas 3413 triblend (lightweight, soft, vintage feel)",
           "t_shirt_notes": "Triblend requires specific ink — ask vendors about soft hand feel on this blank. 1,000 unit run planned.",
           "revenue_share_target": "Negotiate 5-10% of merch revenue",
@@ -75,9 +84,20 @@
           "giphy_strategy": "Layer 1: high-vol reactions. Layer 2: format/vibe. Layer 3: nft/web3/crypto. Layer 4: brand tags. Always include #w3p #zerotohero #z2h #zth"
         }
       },
-      "content_formats": ["X posts", "Community Spaces", "GIFs"],
-      "notable_spaces_hosted": ["Seedphrase (Daniel Maegaard)", "Aborean", "Gigaverse", "Franky Go"],
-      "tools_built": ["FOUNDERFi_Content_Comms.xlsx"],
+      "content_formats": [
+        "X posts",
+        "Community Spaces",
+        "GIFs"
+      ],
+      "notable_spaces_hosted": [
+        "Seedphrase (Daniel Maegaard)",
+        "Aborean",
+        "Gigaverse",
+        "Franky Go"
+      ],
+      "tools_built": [
+        "FOUNDERFi_Content_Comms.xlsx"
+      ],
       "next_actions": [
         "Finalize Cheese merch box fit issue",
         "Get dieline vector from vendor",
@@ -85,7 +105,6 @@
         "Negotiate merch revenue share %"
       ]
     },
-
     "founderfi": {
       "name": "FOUNDERFi LABZ",
       "role": "Lead Ops",
@@ -113,7 +132,13 @@
       },
       "game_ship_or_rug": {
         "description": "Idle startup sim. Build a crypto company, hire team, manage resources, ship features, earn $FOUNDER tokens, exit via Buyout or IPO.",
-        "mechanics": ["FOUNDER token earn", "Infrastructure dependency chain", "Legacy Points", "Diminishing returns penalties", "Prestige loop"],
+        "mechanics": [
+          "FOUNDER token earn",
+          "Infrastructure dependency chain",
+          "Legacy Points",
+          "Diminishing returns penalties",
+          "Prestige loop"
+        ],
         "feedback_tool": "Built two-part feedback form for alpha/beta testing"
       },
       "collab_manager_deal": {
@@ -149,16 +174,22 @@
         "WL swap outreach"
       ]
     },
-
     "rebels_by_richie": {
       "name": "Rebels by Richie",
       "role": "Community & Strategic Advisor",
       "status": "Active — ongoing",
       "started": "2025",
-      "responsibilities": ["Brand positioning", "Audience growth", "Content collaboration", "Network introductions"],
-      "next_actions": ["Continue strategic guidance", "Content collab"]
+      "responsibilities": [
+        "Brand positioning",
+        "Audience growth",
+        "Content collaboration",
+        "Network introductions"
+      ],
+      "next_actions": [
+        "Continue strategic guidance",
+        "Content collab"
+      ]
     },
-
     "frankys_dinner": {
       "name": "Franky's Dinner (Franky Go)",
       "role": "Community Manager (mod)",
@@ -180,7 +211,6 @@
         "Rotate re:generates collab + others"
       ]
     },
-
     "kura": {
       "name": "Kura (Abstract Ecosystem)",
       "role": "BD & Influencer Relations",
@@ -192,7 +222,6 @@
       ]
     }
   },
-
   "content_strategy": {
     "weekly_rhythm": {
       "monday": "Opinion post — market, culture, something noticed",
@@ -214,28 +243,70 @@
     "weekly_minimum": "4 original posts",
     "time_commitment": "20-30 mins/day",
     "pro_tip": "Batch write Sunday night or Monday morning. Draft all 4, schedule or drop through the week.",
-    "projects_to_rotate": ["Web3 Playboys", "Rebels by Richie", "Franky's Dinner"]
+    "projects_to_rotate": [
+      "Web3 Playboys",
+      "Rebels by Richie",
+      "Franky's Dinner"
+    ]
   },
-
   "network": {
     "key_contacts": [
-      {"name": "Sloppy", "role": "Lead artist, Web3 Playboys", "relationship": "Core partner"},
-      {"name": "Seedphrase (Daniel Maegaard)", "role": "Web3 figure", "relationship": "Hosted on Spaces"},
-      {"name": "Aborean", "role": "Web3 figure", "relationship": "Hosted on Spaces"},
-      {"name": "Gigaverse", "role": "Web3 figure", "relationship": "Hosted on Spaces"},
-      {"name": "Franky Go", "role": "Project founder", "relationship": "Community mod"},
-      {"name": "PBC", "role": "FounderFi — working relationship", "relationship": "Active collab"}
+      {
+        "name": "Sloppy",
+        "role": "Lead artist, Web3 Playboys",
+        "relationship": "Core partner"
+      },
+      {
+        "name": "Seedphrase (Daniel Maegaard)",
+        "role": "Web3 figure",
+        "relationship": "Hosted on Spaces"
+      },
+      {
+        "name": "Aborean",
+        "role": "Web3 figure",
+        "relationship": "Hosted on Spaces"
+      },
+      {
+        "name": "Gigaverse",
+        "role": "Web3 figure",
+        "relationship": "Hosted on Spaces"
+      },
+      {
+        "name": "Franky Go",
+        "role": "Project founder",
+        "relationship": "Community mod"
+      },
+      {
+        "name": "PBC",
+        "role": "FounderFi — working relationship",
+        "relationship": "Active collab"
+      }
     ],
     "approach": "Rolodex built on trust, not transactional DMs"
   },
-
   "income_model": {
     "monthly_target_usd": 3000,
     "current_sources": [
-      {"source": "Web3 Playboys BD", "status": "Active", "est_monthly": "TBD"},
-      {"source": "FounderFi Ops (retainer)", "status": "Negotiating", "est_monthly": "$750+ opening ask"},
-      {"source": "Franky's Dinner community mod", "status": "Active", "est_monthly": "TBD"},
-      {"source": "Rebels by Richie advisor", "status": "Active", "est_monthly": "TBD"}
+      {
+        "source": "Web3 Playboys BD",
+        "status": "Active",
+        "est_monthly": "TBD"
+      },
+      {
+        "source": "FounderFi Ops (retainer)",
+        "status": "Negotiating",
+        "est_monthly": "$750+ opening ask"
+      },
+      {
+        "source": "Franky's Dinner community mod",
+        "status": "Active",
+        "est_monthly": "TBD"
+      },
+      {
+        "source": "Rebels by Richie advisor",
+        "status": "Active",
+        "est_monthly": "TBD"
+      }
     ],
     "upside_plays": [
       "Token allocations from BD deals (0.5-2% in early projects)",
@@ -248,7 +319,6 @@
       "essentials": "£900-1,400 equivalent"
     }
   },
-
   "tools_and_infrastructure": {
     "current_dashboard": "https://accykiwi.github.io/kiwistation/",
     "dashboard_issues": "Too many features, doesn't reflect posting rhythm, easy to forget. Needs: content queue tied to weekly rhythm, project status at a glance, one morning prompt.",
@@ -264,7 +334,6 @@
       "status": "Not yet set up"
     }
   },
-
   "memory_log": [
     {
       "date": "2026-04-28",
@@ -326,6 +395,12 @@
       "date": "2026-04-08",
       "type": "income",
       "note": "T-shirt vendor research. Bella+Canvas 3413 triblend selected as blank. Shortlist: Extreme Screen Prints, Scrappy Apparel, Streetwear House. 1,000 unit run. Comfort Colors 1717 eliminated (too heavy)."
+    },
+    {
+      "date": "2026-04-28",
+      "type": "income",
+      "project": "FounderFi",
+      "note": "Test entry: Closed deal for $1,500/month retainer"
     }
   ]
 }

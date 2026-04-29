@@ -351,6 +351,87 @@
   .log-text { font-size: 11px; color: var(--cream); line-height: 1.6; }
   .log-project { font-size: 9px; color: var(--muted); margin-top: 3px; }
 
+  /* ── UPLOAD ZONE ── */
+  .upload-zone {
+    padding: 32px;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(255,255,255,0.02);
+  }
+  .upload-zone:hover {
+    border-color: var(--pink);
+    background: rgba(232,99,122,0.05);
+  }
+  .upload-zone.dragover {
+    border-color: var(--green);
+    background: rgba(92,219,142,0.1);
+  }
+  .upload-prompt {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .file-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .file-item {
+    position: relative;
+    padding: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-align: center;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .file-item:hover {
+    border-color: var(--pink);
+    background: rgba(232,99,122,0.05);
+  }
+  .file-item img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 3px;
+    margin-bottom: 6px;
+  }
+  .file-item-name {
+    font-size: 9px;
+    color: var(--cream);
+    word-break: break-all;
+    margin-bottom: 6px;
+  }
+  .file-item-del {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: var(--pink);
+    color: var(--bg);
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .file-item:hover .file-item-del {
+    opacity: 1;
+  }
+  .file-item-del:hover {
+    background: var(--orange);
+  }
+
   /* ── LOG INPUT ── */
   .log-form { display: flex; flex-direction: column; gap: 10px; }
   .log-form select, .log-form input, .log-form textarea {
@@ -507,6 +588,16 @@
   <!-- PROJECTS -->
   <div class="grid-mid" id="project-grid"></div>
 
+  <!-- MEDIA UPLOAD -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-label">Media Library</div>
+    <div id="upload-zone" class="upload-zone">
+      <div class="upload-prompt">📁 Drop images, PDFs, files here or click to upload</div>
+      <input type="file" id="file-input" multiple style="display:none">
+    </div>
+    <div id="file-list" class="file-list"></div>
+  </div>
+
   <!-- BOTTOM ROW -->
   <div class="grid-bot">
 
@@ -577,6 +668,15 @@ async function loadBrain() {
       memory_log: []
     };
   }
+
+  // Load file list
+  try {
+    const filesRes = await fetch('/api/files');
+    uploadedFiles = await filesRes.json();
+  } catch (e) {
+    uploadedFiles = [];
+  }
+
   localLog = [...(brain.memory_log || [])];
   render();
 }
@@ -796,11 +896,99 @@ async function addLogEntry() {
   }
 }
 
+// File uploads
+let uploadedFiles = [];
+
+function initUpload() {
+  const zone = document.getElementById('upload-zone');
+  const input = document.getElementById('file-input');
+
+  // Click to upload
+  zone.addEventListener('click', () => input.click());
+
+  // Drag and drop
+  zone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    zone.classList.add('dragover');
+  });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    zone.classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+  });
+
+  // File input change
+  input.addEventListener('change', (e) => {
+    handleFiles(e.target.files);
+  });
+
+  renderFileList();
+}
+
+async function handleFiles(files) {
+  const formData = new FormData();
+  for (let file of files) {
+    formData.append('files', file);
+  }
+
+  try {
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData
+    });
+    if (!res.ok) throw new Error('Upload failed');
+    const result = await res.json();
+    uploadedFiles = result.files;
+    renderFileList();
+  } catch (e) {
+    alert('Upload error: ' + e.message);
+  }
+}
+
+function renderFileList() {
+  const list = document.getElementById('file-list');
+  if (!uploadedFiles || uploadedFiles.length === 0) {
+    list.innerHTML = '';
+    return;
+  }
+  list.innerHTML = uploadedFiles.map(file => {
+    const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file);
+    return `
+      <div class="file-item" title="${file}">
+        ${isImage ? `<img src="/uploads/${file}" onerror="this.style.display='none'">` : '<div style="font-size:32px">📄</div>'}
+        <div class="file-item-name">${file.split('/').pop()}</div>
+        <button class="file-item-del" onclick="deleteFile('${file}')">×</button>
+      </div>
+    `;
+  }).join('');
+}
+
+async function deleteFile(filename) {
+  if (!confirm(`Delete ${filename.split('/').pop()}?`)) return;
+  try {
+    const res = await fetch('/api/upload', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ file: filename })
+    });
+    if (!res.ok) throw new Error('Delete failed');
+    const result = await res.json();
+    uploadedFiles = result.files;
+    renderFileList();
+  } catch (e) {
+    alert('Delete error: ' + e.message);
+  }
+}
+
 function initUI() {
   // Set date input to today
   const today = new Date().toISOString().split('T')[0];
   const dateInput = document.getElementById('log-date');
   if (dateInput) dateInput.value = today;
+
+  // Init upload zone
+  initUpload();
 }
 
 loadBrain().then(() => {
