@@ -1,0 +1,331 @@
+{
+  "meta": {
+    "version": "1.0",
+    "created": "2026-04-28",
+    "last_updated": "2026-04-28",
+    "description": "Kiwi's persistent memory for Claude Code. Always read this at session start. Always append to memory_log when decisions are made."
+  },
+
+  "profile": {
+    "name": "Kiwi",
+    "handle": "@accykiwi",
+    "focus": "Web3 BD, strategy, community management",
+    "hours_per_week": 60,
+    "runway_months": 6,
+    "runway_start": "2026-04-01",
+    "location": "England (targeting £500k house purchase)",
+    "ecosystem": ["Abstract", "Ethereum Mainnet"],
+    "approach": "Chain-agnostic",
+    "brand_mode": "Industry reputation builder, not full influencer",
+    "x_followers": 1000
+  },
+
+  "goals": {
+    "income_target_monthly": 3000,
+    "income_currency": "USD",
+    "income_streams": [
+      "Paid roles / contracting",
+      "Trading / flipping NFTs",
+      "WL / allocation flipping",
+      "Revenue share on Cheese merch",
+      "Token allocations (push for equity not just cash)"
+    ],
+    "follower_target": "Grow X following for doors to open",
+    "timeline": "Full-time in crypto within 6 months",
+    "house_goal": {
+      "price": 500000,
+      "currency": "GBP",
+      "status": "Deposit ready",
+      "location": "England"
+    },
+    "passive_income_notes": "Staking + savings ~£160-220/mo currently. Real play is token allocations from BD deals and Cheese merch rev share. Negotiate 5-10% cut of merch revenue before launch."
+  },
+
+  "projects": {
+    "web3_playboys": {
+      "name": "Web3 Playboys",
+      "role": "BD & Strategy Lead",
+      "status": "Active",
+      "key_person": "Sloppy (lead artist)",
+      "started": "2025",
+      "sub_projects": {
+        "cheese_character": {
+          "name": "Cheese (rat character)",
+          "status": "Active — character rotation v01 done (06/01/26)",
+          "artist": "Sloppy",
+          "character_notes": "Gray rat, pink ears/tail, yellow buck teeth, big eyes. 5-angle rotation sheet completed.",
+          "giphy_tags_required": ["#w3p", "#zerotohero", "#z2h", "#zth"],
+          "traits_pool_party": "Working set — Succession float, Graduate staring, Breaking Bad pink bear, The Graduate, frame-by-frame animation"
+        },
+        "cheese_merch": {
+          "status": "In development",
+          "plush_dimensions": "L11 × W10 × H15.5cm",
+          "box_dimensions": "H15cm × W11cm × D13cm",
+          "fit_issue": "Plush is 0.5cm too tall. Options: request 16cm box, compress (risky), reduce plush to 14.5cm",
+          "dieline_status": "Requested from vendor",
+          "vendor_shortlist": ["Extreme Screen Prints", "Scrappy Apparel", "Streetwear House"],
+          "blank_selected": "Bella+Canvas 3413 triblend (lightweight, soft, vintage feel)",
+          "t_shirt_notes": "Triblend requires specific ink — ask vendors about soft hand feel on this blank. 1,000 unit run planned.",
+          "revenue_share_target": "Negotiate 5-10% of merch revenue",
+          "next_action": "Get dieline file from vendor, confirm box height fix"
+        },
+        "zero_to_hero": {
+          "name": "Zero to Hero (z2h/zth)",
+          "status": "Active — GIFs being produced for Giphy",
+          "giphy_strategy": "Layer 1: high-vol reactions. Layer 2: format/vibe. Layer 3: nft/web3/crypto. Layer 4: brand tags. Always include #w3p #zerotohero #z2h #zth"
+        }
+      },
+      "content_formats": ["X posts", "Community Spaces", "GIFs"],
+      "notable_spaces_hosted": ["Seedphrase (Daniel Maegaard)", "Aborean", "Gigaverse", "Franky Go"],
+      "tools_built": ["FOUNDERFi_Content_Comms.xlsx"],
+      "next_actions": [
+        "Finalize Cheese merch box fit issue",
+        "Get dieline vector from vendor",
+        "Continue pool party trait development",
+        "Negotiate merch revenue share %"
+      ]
+    },
+
+    "founderfi": {
+      "name": "FOUNDERFi LABZ",
+      "role": "Lead Ops",
+      "status": "Active — pre-mint",
+      "x_handle": "@FOUNDERFi_xyz_",
+      "discord": "discord.gg/MZDMpkJmmU",
+      "chain": "Ethereum Mainnet",
+      "supply": 1111,
+      "team_treasury_reserve": "50-100 NFTs",
+      "mint_date": "July 7, 2026",
+      "mint_location": "TBA — don't trust links from anywhere else",
+      "pricing": {
+        "term_sheet_presale": 10,
+        "gtd_mint_day_burn": 40,
+        "total_gtd": 50,
+        "fcfs_allowlist": 55,
+        "public": 60
+      },
+      "mechanic": "Term Sheet NFT ($10) = tradeable GTD seat. Burn on mint day + $40 = Genesis NFT. Don't redeem = forfeit, rolls to public.",
+      "roadmap": {
+        "S1": "Genesis + Ship or Rug (idle startup sim, multipliers for holders)",
+        "S2": "The Interns",
+        "S3": "$FOUNDER token",
+        "S4": "TBA (sara hasn't approved the rest yet)"
+      },
+      "game_ship_or_rug": {
+        "description": "Idle startup sim. Build a crypto company, hire team, manage resources, ship features, earn $FOUNDER tokens, exit via Buyout or IPO.",
+        "mechanics": ["FOUNDER token earn", "Infrastructure dependency chain", "Legacy Points", "Diminishing returns penalties", "Prestige loop"],
+        "feedback_tool": "Built two-part feedback form for alpha/beta testing"
+      },
+      "collab_manager_deal": {
+        "model": "Hybrid — 1 NFT (from team supply) per confirmed collab + % cash commission per attributed mint",
+        "confirmed_collab_definition": "TBD — Space, joint post, or allowlist swap",
+        "status": "Structuring"
+      },
+      "community_manager": {
+        "status": "Recruiting",
+        "outreach_drafted": true,
+        "notes": "DM drafted — emphasize Genesis collection as foundation, holder benefits, existing product (Ship or Rug + FOUNDERFi BUILD beta)"
+      },
+      "kiwi_compensation": {
+        "structure": "Monthly retainer + % of mint proceeds + secondary royalties",
+        "opening_ask": "$750/mo retainer",
+        "notes": "Stable base + equity upside. Room to negotiate down from opening."
+      },
+      "tools_built": [
+        "founderfi_ops.xlsx (task tracker, calendar)",
+        "founderfi_distribution.xlsx (collab + team allocations)",
+        "FOUNDERFi_Content_Comms.xlsx (content calendar + post bank + WL swap tracker)"
+      ],
+      "tweet_copy_approved": [
+        "Being a crypto founder looks easy from the outside. The inside is ship or rug, every single day. 1,111 founders. One shot. @FOUNDERFi_xyz_ coming to ETH.",
+        "Everyone wants to be a founder. Not everyone survives it. 1,111 founders. One shot. @FOUNDERFi_xyz_ — coming to ETH."
+      ],
+      "next_actions": [
+        "Lock mint location",
+        "Finalize collab manager terms",
+        "Hire community manager",
+        "Build out Term Sheet presale GTD list",
+        "Content calendar execution (May 5 → July 7)",
+        "WL swap outreach"
+      ]
+    },
+
+    "rebels_by_richie": {
+      "name": "Rebels by Richie",
+      "role": "Community & Strategic Advisor",
+      "status": "Active — ongoing",
+      "started": "2025",
+      "responsibilities": ["Brand positioning", "Audience growth", "Content collaboration", "Network introductions"],
+      "next_actions": ["Continue strategic guidance", "Content collab"]
+    },
+
+    "frankys_dinner": {
+      "name": "Franky's Dinner (Franky Go)",
+      "role": "Community Manager (mod)",
+      "status": "Active",
+      "community_size": "100+ members",
+      "weekly_special": {
+        "description": "Community X Space — 'The Weekly Special' — restaurant/dinner themed",
+        "time": "5pm EST",
+        "pun_established": "re:served (for re:generates collab)",
+        "format": "Guest interview + Franky's Adventures tournament with NFT prize"
+      },
+      "re_generates_collab": {
+        "pun": "re:served",
+        "nft_prize": "re:generates NFT via Franky's Adventures tournament",
+        "tweet_approved": "The Weekly Special returns tomorrow at 5pm EST 🍽️\n@re_generates will be joining us at the table\n\nFranky's Adventures tournament — Winner gets a @re_generates NFT. Loser just gets dinner.\nReminder in the comments 👇"
+      },
+      "next_actions": [
+        "Continue Weekly Special cadence",
+        "Rotate re:generates collab + others"
+      ]
+    },
+
+    "kura": {
+      "name": "Kura (Abstract Ecosystem)",
+      "role": "BD & Influencer Relations",
+      "status": "Completed (2025)",
+      "achievements": [
+        "Launched first unofficial Abstract portal",
+        "Built KOL relationships across Abstract network",
+        "Developed alternative monetization frameworks (user fees, sponsor models)"
+      ]
+    }
+  },
+
+  "content_strategy": {
+    "weekly_rhythm": {
+      "monday": "Opinion post — market, culture, something noticed",
+      "tuesday": "Project post — Rebels, Franky, or W3P. Art + angle",
+      "wednesday": "Replies only — 15 mins replying to builders you want to connect with. No posting.",
+      "thursday": "Project post — different project than Tuesday",
+      "friday": "Personal/humor — dog content, self-deprecating crypto joke",
+      "weekend": "Optional wildcard — only if inspired"
+    },
+    "post_formula": "[Art/image] [One-liner opinion or context] [Tag project]",
+    "example_post": "Sloppy keeps cooking. Cheese might be my favorite character design this year. @web3playboys",
+    "voice_guardrails": [
+      "Jokey, never try-hard",
+      "Subtle flex > loud flex",
+      "Opinionated but not aggressive",
+      "Honest about the bear market grind",
+      "No post without a point of view"
+    ],
+    "weekly_minimum": "4 original posts",
+    "time_commitment": "20-30 mins/day",
+    "pro_tip": "Batch write Sunday night or Monday morning. Draft all 4, schedule or drop through the week.",
+    "projects_to_rotate": ["Web3 Playboys", "Rebels by Richie", "Franky's Dinner"]
+  },
+
+  "network": {
+    "key_contacts": [
+      {"name": "Sloppy", "role": "Lead artist, Web3 Playboys", "relationship": "Core partner"},
+      {"name": "Seedphrase (Daniel Maegaard)", "role": "Web3 figure", "relationship": "Hosted on Spaces"},
+      {"name": "Aborean", "role": "Web3 figure", "relationship": "Hosted on Spaces"},
+      {"name": "Gigaverse", "role": "Web3 figure", "relationship": "Hosted on Spaces"},
+      {"name": "Franky Go", "role": "Project founder", "relationship": "Community mod"},
+      {"name": "PBC", "role": "FounderFi — working relationship", "relationship": "Active collab"}
+    ],
+    "approach": "Rolodex built on trust, not transactional DMs"
+  },
+
+  "income_model": {
+    "monthly_target_usd": 3000,
+    "current_sources": [
+      {"source": "Web3 Playboys BD", "status": "Active", "est_monthly": "TBD"},
+      {"source": "FounderFi Ops (retainer)", "status": "Negotiating", "est_monthly": "$750+ opening ask"},
+      {"source": "Franky's Dinner community mod", "status": "Active", "est_monthly": "TBD"},
+      {"source": "Rebels by Richie advisor", "status": "Active", "est_monthly": "TBD"}
+    ],
+    "upside_plays": [
+      "Token allocations from BD deals (0.5-2% in early projects)",
+      "Cheese merch rev share (5-10% target)",
+      "WL/allocation flipping ($500-2k per pop)",
+      "Referral/intro fees (5-10% finder's fee standard in Web3)"
+    ],
+    "monthly_expenses_gbp": {
+      "housing": "TBD (mortgage on £500k house)",
+      "essentials": "£900-1,400 equivalent"
+    }
+  },
+
+  "tools_and_infrastructure": {
+    "current_dashboard": "https://accykiwi.github.io/kiwistation/",
+    "dashboard_issues": "Too many features, doesn't reflect posting rhythm, easy to forget. Needs: content queue tied to weekly rhythm, project status at a glance, one morning prompt.",
+    "spreadsheets_built": [
+      "founderfi_ops.xlsx — task tracker + calendar",
+      "founderfi_distribution.xlsx — collab + team NFT allocations",
+      "FOUNDERFi_Content_Comms.xlsx — content calendar May→Jul 7 + post bank + WL swap tracker"
+    ],
+    "github": "https://accykiwi.github.io/kiwistation/",
+    "calendly": {
+      "plan_needed": "Teams ($16/user/mo annual)",
+      "use_case": "BD calls, partnership convos, team coordination",
+      "status": "Not yet set up"
+    }
+  },
+
+  "memory_log": [
+    {
+      "date": "2026-04-28",
+      "type": "project_update",
+      "project": "FounderFi",
+      "note": "Kiwi confirmed as Lead Ops. July 7 mint date on Ethereum. Reviewed FOUNDERFi Genesis mint brief. Term sheet mechanic ($10 presale → $50 total). Working on collab manager commission structure and community manager hire."
+    },
+    {
+      "date": "2026-04-28",
+      "type": "content",
+      "project": "FounderFi",
+      "note": "Tweet drafts finalized: '1,111 founders. One shot.' + 'Being a crypto founder looks easy from the outside.' — Option 5 (ship or rug angle) selected as strongest."
+    },
+    {
+      "date": "2026-04-28",
+      "type": "project_update",
+      "project": "Web3 Playboys",
+      "note": "Cheese character rotation v01 complete (Sloppy, 06/01/26). 5-angle rotation sheet done. Merch in dev — box/plush fit issue (plush 0.5cm too tall). Dieline requested from vendor."
+    },
+    {
+      "date": "2026-04-28",
+      "type": "income",
+      "note": "Calculated income viability. Monthly expenses ~£900-1,400 essentials + mortgage TBD. Passive income currently ~£160-220/mo (staking/savings). Real moves: token allocations, merch rev share, WL flipping, intro fees."
+    },
+    {
+      "date": "2026-04-27",
+      "note": "Bought 2 BAYC Mutant Apes. Bear market conviction buy. Post drafted — nostalgia angle (vintage Star Wars figures / collector instinct)."
+    },
+    {
+      "date": "2026-04-21",
+      "type": "project_update",
+      "project": "Franky's Dinner",
+      "note": "Weekly Special Space. re:generates collab. Pun: 're:served'. Tweet approved: Franky's Adventures tournament, re:generates NFT prize."
+    },
+    {
+      "date": "2026-04-21",
+      "type": "tool",
+      "note": "Reviewed kiwistation.github.io dashboard. Issue: too many features, not useful enough daily. Recommendation: strip to 3 things — post type for today, project status, post idea bank. Set as browser homepage."
+    },
+    {
+      "date": "2026-04-17",
+      "type": "merch",
+      "project": "Web3 Playboys",
+      "note": "Cheese plush: L11×W10×H15.5cm. Box: H15×W11×D13cm. Plush 0.5cm too tall. Options: 16cm box, compress (risky), reduce plush to 14.5cm."
+    },
+    {
+      "date": "2026-04-14",
+      "type": "project_update",
+      "project": "FounderFi",
+      "note": "Distribution model built. Collab model: 1 NFT per collab secured + % per attributed mint. Spreadsheet built with 20 collab rows + 16 team rows."
+    },
+    {
+      "date": "2026-04-09",
+      "type": "project_update",
+      "project": "FounderFi (Ship or Rug)",
+      "note": "Built beta feedback form for Ship or Rug game. Two-part form: first-run experience + multi-run depth. Terminal aesthetic. Fixed two bugs in form submission logic."
+    },
+    {
+      "date": "2026-04-08",
+      "type": "income",
+      "note": "T-shirt vendor research. Bella+Canvas 3413 triblend selected as blank. Shortlist: Extreme Screen Prints, Scrappy Apparel, Streetwear House. 1,000 unit run. Comfort Colors 1717 eliminated (too heavy)."
+    }
+  ]
+}
