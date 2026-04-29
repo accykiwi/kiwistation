@@ -432,6 +432,76 @@
     background: var(--orange);
   }
 
+  /* ── MARKET WIDGET ── */
+  .mkt-widget {
+    position: fixed; top: 0; right: 0; width: 500px; z-index: 200;
+    background: #070b0e;
+    border-left: 1px solid rgba(255,255,255,0.07);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    border-bottom-left-radius: 12px;
+    font-family: 'IBM Plex Mono','Fira Code','Consolas',monospace;
+  }
+  .mkt-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 4px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+  }
+  .mkt-title {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+    text-transform: uppercase; color: rgba(255,255,255,0.4);
+  }
+  .mkt-live {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 10px; color: rgba(255,255,255,0.25); letter-spacing: 0.05em;
+  }
+  .mkt-live-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: #22c55e;
+    animation: mkt-pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes mkt-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+  .mkt-body {
+    display: grid; grid-template-columns: 1fr 1fr 1.5fr; align-items: start;
+  }
+  .mkt-section {
+    border-right: 1px solid rgba(255,255,255,0.04);
+    padding-bottom: 3px;
+  }
+  .mkt-section:last-child { border-right: none; }
+  .mkt-section-lbl {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: rgba(255,255,255,0.2);
+    padding: 3px 8px 2px;
+  }
+  .mkt-row {
+    display: grid; grid-template-columns: 50px 1fr 64px;
+    align-items: center; padding: 2px 8px; gap: 2px;
+    transition: background 0.1s;
+  }
+  .mkt-row:hover { background: rgba(255,255,255,0.025); }
+  .mkt-sym {
+    font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.7);
+    letter-spacing: 0.05em; white-space: nowrap;
+  }
+  .mkt-price {
+    font-size: 12px; color: rgba(255,255,255,0.92);
+    font-variant-numeric: tabular-nums; text-align: right; padding-right: 4px;
+    white-space: nowrap;
+  }
+  .mkt-chg-col {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 0px;
+  }
+  .mkt-chg {
+    font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums;
+    white-space: nowrap; display: flex; align-items: center; gap: 2px;
+  }
+  .mkt-period {
+    font-size: 8px; font-weight: 600; opacity: 0.45; letter-spacing: 0.04em;
+  }
+  .mkt-up   { color: #22c55e; }
+  .mkt-down { color: #ef4444; }
+  .mkt-dim  { color: rgba(255,255,255,0.22); }
+
   /* ── LOG INPUT ── */
   .log-form { display: flex; flex-direction: column; gap: 10px; }
   .log-form select, .log-form input, .log-form textarea {
@@ -635,6 +705,17 @@
 
   </div>
 
+  <!-- ══ MARKET WIDGET ══ -->
+  <div class="mkt-widget" id="mktWidget">
+    <div class="mkt-header">
+      <span class="mkt-title">MARKETS</span>
+      <div class="mkt-live"><div class="mkt-live-dot"></div><span id="mktAge"></span></div>
+    </div>
+    <div id="mktBody" class="mkt-body">
+      <div class="mkt-section"><div class="mkt-section-lbl">Loading…</div></div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -680,6 +761,9 @@ async function loadBrain() {
 
   localLog = [...(brain.memory_log || [])];
   render();
+
+  // Fetch market data
+  fetchMarket();
 }
 
 function render() {
@@ -899,6 +983,161 @@ async function addLogEntry() {
 
 // File uploads
 let uploadedFiles = [];
+
+// ══════════════════════════════════════
+// MARKETS
+// ══════════════════════════════════════
+const COINS = [
+  { id: 'ethereum', symbol: 'ETH', name: 'Ethereum' },
+  { id: 'bitcoin', symbol: 'BTC', name: 'Bitcoin' },
+];
+
+const NFTS = [
+  { id:'pudgy-penguins', name:'Pudgy Penguins', color:'#3498db', contract:'0xBd3531dA5CF5857e7CfAA92426877b022e612cf8', cgId:'pudgy-penguins' },
+  { id:'bayc',           name:'Bored Apes',     color:'#d4a843', contract:'0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D', cgId:'bored-ape-yacht-club' },
+  { id:'mayc',           name:'Mutant Apes',    color:'#7cb342', contract:'0x60E4d786628Fea6478F785A6d7e704777c86a7c6', cgId:'mutant-ape-yacht-club' },
+];
+
+let nftCache = { data: {}, fetchedAt: null };
+let nftCgCache = null;
+const NFT_CG_TTL = 60 * 60 * 1000;
+
+async function fetchJsonWithRetry(url, retries = 1) {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const r = await fetch(url);
+      if (r.ok) return await r.json();
+      if (r.status === 429 && i < retries) {
+        await new Promise(res => setTimeout(res, 4000 * (i + 1)));
+        continue;
+      }
+      throw new Error('HTTP ' + r.status);
+    } catch (e) {
+      if (i === retries) throw e;
+    }
+  }
+}
+
+async function fetchNFTChanges() {
+  if (nftCgCache && (Date.now() - nftCgCache.ts) < NFT_CG_TTL) return nftCgCache.changes;
+  const changes = { ...(nftCgCache?.changes || {}) };
+  let anyFetched = false;
+  for (const nft of NFTS.filter(n => n.cgId)) {
+    try {
+      const j = await fetchJsonWithRetry(`https://api.coingecko.com/api/v3/nfts/${nft.cgId}`, 2);
+      changes[nft.id] = {
+        c24: j?.floor_price_in_usd_24h_percentage_change ?? null,
+        c7d: j?.floor_price_7d_percentage_change?.native_currency ?? null,
+      };
+      anyFetched = true;
+    } catch {}
+    await new Promise(r => setTimeout(r, 2500));
+  }
+  if (anyFetched) {
+    nftCgCache = { changes, ts: Date.now() };
+  }
+  return changes;
+}
+
+async function fetchNFTs() {
+  const nftsWithContract = NFTS.filter(n => n.contract);
+  const floorResults = await Promise.allSettled(nftsWithContract.map(async (nft) => {
+    const r = await fetch(`https://eth-mainnet.g.alchemy.com/nft/v3/demo/getFloorPrice?contractAddress=${nft.contract}`);
+    if (!r.ok) throw new Error('Alchemy ' + r.status);
+    const j = await r.json();
+    const floor = j?.openSea?.floorPrice ?? null;
+    if (floor == null) throw new Error('No floor');
+    return { id: nft.id, floor, sym: j?.openSea?.priceCurrency || 'ETH' };
+  }));
+
+  const cgChanges = await fetchNFTChanges();
+
+  const data = {};
+  let anyOk = false;
+  floorResults.forEach((res) => {
+    if (res.status === 'fulfilled') {
+      const { id, floor, sym } = res.value;
+      const chg = cgChanges[id] || {};
+      data[id] = { floor, nativeSymbol: sym, change24h: chg.c24 ?? null, change7d: chg.c7d ?? null };
+      anyOk = true;
+    }
+  });
+
+  if (anyOk) {
+    nftCache = { data: { ...nftCache.data, ...data }, fetchedAt: Date.now() };
+  }
+  renderMarketWidget();
+}
+
+async function fetchMarket() {
+  try {
+    const ids = COINS.map(c => c.id).join(',');
+    const priceUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true&include_7d_change=true`;
+    const priceData = await fetchJsonWithRetry(priceUrl, 1);
+    window.marketPrices = priceData;
+  } catch (e) {
+    console.error('Market fetch error:', e);
+  }
+
+  await fetchNFTs();
+}
+
+function chgSpan(val, label) {
+  if (val == null) return `<span class="mkt-chg mkt-dim">—<span class="mkt-period">${label}</span></span>`;
+  const up = val >= 0;
+  return `<span class="mkt-chg ${up ? 'mkt-up' : 'mkt-down'}">${up ? '▲' : '▼'}${Math.abs(val).toFixed(2)}%<span class="mkt-period">${label}</span></span>`;
+}
+
+function row(sym, price, change24, change7d) {
+  return `<div class="mkt-row">
+    <span class="mkt-sym">${sym}</span>
+    <span class="mkt-price">${price ?? '—'}</span>
+    <div class="mkt-chg-col">${chgSpan(change24,'24h')}${chgSpan(change7d,'7d')}</div>
+  </div>`;
+}
+
+function renderMarketWidget() {
+  const body = document.getElementById('mktBody');
+  const ageEl = document.getElementById('mktAge');
+  if (!body) return;
+
+  const now = new Date();
+  const mins = Math.floor((now - (nftCache.fetchedAt || now)) / 60000);
+  ageEl.textContent = mins < 1 ? 'now' : mins + 'm ago';
+
+  let coinsHtml = '';
+  for (const coin of COINS) {
+    const data = window.marketPrices?.[coin.id];
+    if (data) {
+      const price = '$' + data.usd.toLocaleString('en', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      coinsHtml += row(coin.symbol, price, data.usd_24h_change, data.usd_7d_change);
+    } else {
+      coinsHtml += row(coin.symbol, '—', null, null);
+    }
+  }
+
+  let indHtml = '';
+  indHtml += row('TOTAL', window.marketPrices?.['ethereum']?.usd ? '...' : '—', null, null);
+
+  let nftHtml = '';
+  const SHORT = { 'Pudgy Penguins':'PUDGY','Bored Apes':'BAYC','Mutant Apes':'MAYC' };
+  for (const nft of NFTS) {
+    const d = nftCache.data[nft.id];
+    const sym = SHORT[nft.name] || nft.name.slice(0,7);
+    if (d?.floor != null) {
+      const fp = d.floor.toFixed(3) + ' ' + (d.nativeSymbol || 'ETH');
+      nftHtml += row(sym, fp, d.change24h, d.change7d);
+    } else {
+      nftHtml += row(sym, '—', null, null);
+    }
+  }
+
+  body.innerHTML = `
+    <div class="mkt-section"><div class="mkt-section-lbl">Coins</div>${coinsHtml}</div>
+    <div class="mkt-section"><div class="mkt-section-lbl">Market</div>${indHtml}</div>
+    <div class="mkt-section"><div class="mkt-section-lbl">NFTs</div>${nftHtml}</div>
+  `;
+}
 
 function initUpload() {
   const zone = document.getElementById('upload-zone');
